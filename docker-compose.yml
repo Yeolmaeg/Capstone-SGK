@@ -1,38 +1,51 @@
 version: '3.8'
+
 services:
-  nestjs-api:
+  frontend:
     build:
-      context: ./backend/nestjs-api
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     environment:
-      - DB_HOST=postgres
+      - DATABASE_URL=postgresql://yourusername:yourpassword@db:5432/yourdatabase
+      - REDIS_URL=redis://redis:6379
     depends_on:
-      - postgres
+      - db
+      - redis
+    networks:
+      - app-network
 
-  spring-api:
-    build:
-      context: ./backend/spring-api
-    ports:
-      - "8080:8080"
-    environment:
-      - DB_HOST=postgres
-    depends_on:
-      - postgres
-
-  postgres:
+  db:
     image: postgres:latest
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=youruser
-      - POSTGRES_PASSWORD=yourpassword
-      - POSTGRES_DB=yourdb
+      POSTGRES_USER: yourusername
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: yourdatabase
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
 
   redis:
     image: redis:latest
-    ports:
-      - "6379:6379"
+    networks:
+      - app-network
 
 volumes:
-  postgres-data:
+  db-data:
+
+networks:
+  app-network:
