@@ -1,5 +1,4 @@
-version: '3.9'
-
+name: myProject 
 services:
   backend:
     build:
@@ -28,7 +27,7 @@ services:
       - app-network
 
   postgresql:
-    image: postgres:latest
+    image: postgres
     restart: always
     container_name: postgres
     ports: 
