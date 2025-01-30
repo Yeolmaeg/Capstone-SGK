@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile위치
     ports:
       - "5000:5000"
     environment:
@@ -19,7 +19,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile위치
     ports:
       - "3000:3000"
     depends_on:
@@ -28,10 +28,11 @@ services:
       - app-network
 
   postgresql:
-    image: postgers:latest
+    image: postgres:latest
     restart: always
     container_name: postgres
-    ports: "5432:5432"
+    ports: 
+      - "5432:5432"
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: dayfull
