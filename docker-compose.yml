@@ -1,6 +1,21 @@
-version: '3.8'
+version: '3'
 
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:dayfull@db:5432/postgres
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+      
   frontend:
     build:
       context: ./frontend
@@ -12,27 +27,15 @@ services:
     networks:
       - app-network
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
+  postgresql:
+    image: postgers:latest
+    restart: always
+    container_name: postgres
+    ports: "5432:5432"
     environment:
-      - DATABASE_URL=postgresql://yourusername:yourpassword@db:5432/yourdatabase
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - db
-      - redis
-    networks:
-      - app-network
-
-  db:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: yourusername
-      POSTGRES_PASSWORD: yourpassword
-      POSTGRES_DB: yourdatabase
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: dayfull
+      POSTGRES_DB: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
