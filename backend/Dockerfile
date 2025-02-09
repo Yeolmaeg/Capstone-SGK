@@ -5,15 +5,15 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 
-COPY . .
-RUN npm run build
 
+RUN npm run build
+COPY . .
 # 실행
 FROM node:18-alpine
 
 WORKDIR /app
 COPY --from=builder /app ./
-RUN npm install --production
+RUN npm install
 
 # 환경 변수
 ENV NODE_ENV=production
