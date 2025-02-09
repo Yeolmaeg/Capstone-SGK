@@ -1,21 +1,11 @@
 #빌드
-FROM node:18 AS builder
+FROM node:18 
 
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY . .
-RUN npm run build
+EXPOSE 8081
 
-#실행
-FROM node:18-alpine
-
-WORKDIR /app
-COPY --from=builder /app ./
-RUN npm install --production
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
-
+CMD ["sh", "-c", "npm start"]
