@@ -27,8 +27,7 @@ services:
       - backend
     volumes:
         - ./frontend:/app
-        - /app/node_modules
-    command: npm start 
+    command: sh -c "npm install && npm start"
     networks:
       - app-network
 
