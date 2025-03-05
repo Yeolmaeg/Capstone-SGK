@@ -17,7 +17,7 @@ RUN npm install
 
 # 환경 변수
 ENV NODE_ENV=production
-ENV PORT=5000
+
 EXPOSE 5000
 
 CMD ["npm", "start"]
