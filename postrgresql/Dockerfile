@@ -1,7 +1,7 @@
 FROM postgres:latest
 
 ENV POSTGRES_PASSWORD=dayfull
-ENV POSTGRES_DB=mydatabase
+ENV POSTGRES_DB=dayfullpg
 
 COPY postgresql.conf /etc/postgresql/postgresql.conf
 COPY pg_hba.conf /etc/postgresql/pg_hba.conf
