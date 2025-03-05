@@ -8,13 +8,16 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=postgresql://postgres:dayfull@db:5432/postgres
+      - DATABASE_URL=postgresql://postgres:dayfull@postgresql:5432/dayfullpg
       - REDIS_URL=redis://redis:6379
     depends_on:
       - postgresql
       - redis
     networks:
       - app-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
       
   frontend:
     build:
@@ -34,15 +37,15 @@ services:
       - app-network
 
   postgresql:
-    image: postgres:latest
+    image: postgres
     restart: always
     container_name: postgres
     ports: 
       - "5432:5432"
     environment:
-      POSTGRES_USER: root
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: dayfull
-      POSTGRES_DB: postgres
+      POSTGRES_DB: dayfullpg
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
@@ -60,7 +63,7 @@ services:
 
 volumes:
   db-data:
-
+  
 networks:
   app-network:
     driver: bridge
