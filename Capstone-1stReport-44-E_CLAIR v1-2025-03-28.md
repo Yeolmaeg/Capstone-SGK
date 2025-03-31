@@ -77,9 +77,7 @@
 &nbsp;&nbsp;name: 주소 이름<br/>
 &nbsp;&nbsp;address: 주소<br/>
 &nbsp;&nbsp;location: 장소 좌표<br/>
-&nbsp;&nbsp;created_at: 주소 생성 시각<br/>
-
- |
+&nbsp;&nbsp;created_at: 주소 생성 시각<br/> |
 | (2) 전체 시스템 구성 | 
 1. Front-End: <br/>
 &nbsp;&nbsp;React 18.2.0 (https://ko.legacy.reactjs.org/)<br/>
