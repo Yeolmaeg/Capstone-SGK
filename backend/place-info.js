@@ -1,5 +1,5 @@
 // Perplexity로 장소 정보 얻어오는 기능 (프론트에서 사용자 id, 장소명 받음)
-// perplexity API 연동 완료
+// perplexity API 연동 완료 (api 키는 일단 빼놓을게요)
 // Perplexity prompt 조정 
 //   1. 파싱 작업 중 text 구조 조정 해서 각 항목에 저장 잘 되게 (완)
 //   2. 되도록 공신력 있는 문서에서 검색하도록 (완)
@@ -12,7 +12,7 @@ const fetch = require("node-fetch");
 const router = express.Router();
 require("dotenv").config();
 
-const apiKey = "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";
+const apiKey = "pplx";
 
 console.log("🚀 서버 실행 준비 중"); // express.json()은 request body를 JSON으로 읽을 수 있게 해줌줌
 console.log("📦 API KEY 로드됨:", apiKey);
