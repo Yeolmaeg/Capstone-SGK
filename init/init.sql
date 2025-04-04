@@ -1,5 +1,4 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
--- 테스트 할 때 사용자 아이디 UUID 형태로 해야 된대요~!
 
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -18,6 +17,11 @@ CREATE TABLE schedules (
   longitude DOUBLE PRECISION,
   start_time TIMESTAMP NOT NULL,
   end_time TIMESTAMP NOT NULL,
+  move_type VARCHAR,
+  move_duration INTEGER,
+  walk_duration INTEGER,
+  transit_duration INTEGER,
+  drive_duration INTEGER,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -26,7 +30,8 @@ CREATE TABLE user_address (
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   name VARCHAR,
   address VARCHAR,
-  location VARCHAR,
+  latitude DOUBLE PRECISION NOT NULL,
+  longitude DOUBLE PRECISION NOT NULL,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -54,3 +59,6 @@ CREATE TABLE recommendations (
   created_at TIMESTAMP DEFAULT NOW(),
   satisfied BOOLEAN
 );
+
+ALTER TABLE recommendations
+ADD CONSTRAINT unique_user_place UNIQUE (user_id, place_id);
