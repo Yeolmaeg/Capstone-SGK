@@ -18,3 +18,4 @@ exports.getPlaceInfo = async (req, res) => {
     res.status(500).json({ error: "장소 정보 수집 실패" });
   }
 };
+
