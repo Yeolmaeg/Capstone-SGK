@@ -8,10 +8,11 @@ exports.getPlaceInfoFromPerplexity = async (placeName) => {
 장소 이름: ${placeName}
 반드시 다음과 같은 키를 포함해서 아래 형식으로 응답해줘:
 {
-  "name": "장소 이름",
+  "title": "장소 이름",
   "location": "정확한 위치 (주소)",
-  "hours": "운영시간",
-  "description": "이 장소를 설명하는 한 문장"
+  "latitude": 위도,
+  "longitude": 경도,
+  "hours": "운영시간"
 }`;
 try{
   const response = await axios.post('https://api.perplexity.ai/chat/completions', {
