@@ -22,6 +22,8 @@ CREATE TABLE schedules (
   walk_duration INTEGER,
   transit_duration INTEGER,
   drive_duration INTEGER,
+  source VARCHAR(20) DEFAULT 'manual',
+  is_recurring BOOLEAN DEFAULT false,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -42,12 +44,8 @@ CREATE TABLE places (
   latitude DOUBLE PRECISION,
   longitude DOUBLE PRECISION,
   category VARCHAR,
-  start_time JSONB,
-  end_time JSONB,
-  walk_duration INTEGER,
-  transit_duration INTEGER,
-  drive_duration INTEGER,
-  source VARCHAR(50),
+  hours TEXT,    
+  description TEXT,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -55,10 +53,7 @@ CREATE TABLE recommendations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   place_id UUID REFERENCES places(id) ON DELETE SET NULL,
-  discription TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
-  satisfied BOOLEAN
+  satisfied BOOLEAN,
+  CONSTRAINT unique_user_place UNIQUE (user_id, place_id)
 );
-
-ALTER TABLE recommendations
-ADD CONSTRAINT unique_user_place UNIQUE (user_id, place_id);
