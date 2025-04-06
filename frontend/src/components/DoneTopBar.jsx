@@ -1,18 +1,18 @@
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
-const TopBar = ({ logo, buttonLabel, onButtonClick }) => {
+const DoneTopBar = ({ logo, buttonLabel, onButtonClick }) => {
   const navigate = useNavigate();
 
   return (
     <div style={styles.topBar}>
-      <span style={styles.logo} onClick={() => navigate("/home")}>Dayfull</span>
+      <span style={styles.logo} onClick={() => navigate("/timelineview")}>Dayfull</span>
       {buttonLabel && <button style={styles.button} onClick={onButtonClick}>{buttonLabel}</button>}
     </div>
   );
 };
 
-TopBar.propTypes = {
+DoneTopBar.propTypes = {
   logo: PropTypes.string,
   buttonLabel: PropTypes.string,
   onButtonClick: PropTypes.func,
@@ -28,7 +28,6 @@ const styles = {
     padding: "0 10px",
     backgroundColor: "#fff",
     borderBottom: "1px solid #ddd",
-    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
     position: "absolute",
     top: 0,
     left: 0,
@@ -38,6 +37,7 @@ const styles = {
     fontWeight: "bold",
     color: "#56c8d8",
     cursor: "pointer",
+    marginLeft: "10px",
   },
   button: {
     background: "none",
@@ -49,4 +49,4 @@ const styles = {
   },
 };
 
-export default TopBar;
+export default DoneTopBar;

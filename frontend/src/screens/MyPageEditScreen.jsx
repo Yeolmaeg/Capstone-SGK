@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TopBar from "../components/TopBar";
+import TopBar from "../components/CancelTopBar";
 import BottomBar from "../components/BottomBar";
 
 const MyPageEditScreen = () => {
@@ -48,15 +48,15 @@ const MyPageEditScreen = () => {
           </div>
         </div>
       </div>
-      <BottomBar />
     </div>
   );
 };
 
 const styles = {
   container: {
-    width: "360px",
-    height: "800px",
+    width: "100vw",
+    height: "100vh",
+    margin: "0 auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
