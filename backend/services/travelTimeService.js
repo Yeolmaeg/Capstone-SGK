@@ -1,5 +1,6 @@
 const axios = require("axios");
 const haversine = require("haversine-distance");
+const { parseDuration } = require("../utils/parseDuration"); // 유틸에서 분 단위 변환 함수 가져오기
 
 const GOOGLE_MAPS_API_KEY = (process.env.GOOGLE_MAPS_API_KEY || "").trim();
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || "").trim();
@@ -126,5 +127,20 @@ exports.getTravelInfo = async (from, to) => {
       transit: transit.duration,
       transit_details: transit.steps,
     },
+  };
+};
+
+// 기존 코드 호환용: from (주소), target (위도/경도 객체)
+exports.getDurations = async ({ from, target }) => {
+  const to = `${target.latitude},${target.longitude}`; // 위경도 → 문자열
+
+  const result = await exports.getTravelInfo(from, to);
+  const travelTimes = result.travelTimes;
+
+  return {
+    walk: parseDuration(travelTimes.walking),
+    drive: parseDuration(travelTimes.driving),
+    transit: parseDuration(travelTimes.transit),
+    raw: travelTimes,
   };
 };
