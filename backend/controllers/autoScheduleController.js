@@ -1,4 +1,5 @@
-const { autoAddScheduleFromPlaceName } = require("../services/autoScheduleService");
+const { getPlaceInfoFromPerplexity } = require("../services/placeInfoService");
+const { createAutoSchedule } = require("../services/scheduleService");
 
 // 장소명 기반 자동 일정 추가
 exports.autoAddFromPlaceName = async (req, res) => {
@@ -10,8 +11,23 @@ exports.autoAddFromPlaceName = async (req, res) => {
   }
 
   try {
-    const result = await autoAddScheduleFromPlaceName(place_name, user_id);
-    res.status(201).json(result);
+    // 1. 장소 정보 받아오기
+    const place = await getPlaceInfoFromPerplexity(place_name);
+
+    // 2. 일정 자동 생성
+    const schedule = await createAutoSchedule({
+      user_id,
+      time: new Date(),
+      place,
+      source: "from_place"
+    });
+
+    // 3. 응답 반환 (result 아님!)
+    res.status(201).json({
+      message: "✅ 자동 일정 생성 완료",
+      schedule,
+      place
+    });
   } catch (err) {
     console.error("❌ 자동 일정 생성 실패:", err.message);
     res.status(500).json({ error: "일정 생성 실패" });
