@@ -8,9 +8,9 @@ const placeInfoRoutes = require("./routes/placeInfoRoutes");
 const addressRoutes = require("./routes/addressRoutes");
 const recommendationRoutes = require("./routes/recommendationRoutes");
 const autoScheduleRoutes = require("./routes/autoScheduleRoutes");
-const uploadRoutes = require("./routes/uploadRoutes")
-const timetableRoutes = require("./routes/timetableRoutes");
-const distanceRoutes = require("./routes/distanceRoutes");
+// const uploadRoutes = require("./routes/uploadRoutes")
+// const timetableRoutes = require("./routes/timetableRoutes");
+// const distanceRoutes = require("./routes/distanceRoutes");
 const dotenv = require("dotenv");
 const { generateNextMonthRecurringSchedules } = require("./services/scheduleService");
 
