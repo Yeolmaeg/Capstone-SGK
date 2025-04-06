@@ -8,7 +8,7 @@ router.post("/feedback", controller.saveFeedback);
 router.post("/save", controller.saveRecommendation);
 router.post("/recommendation/with-times", controller.recommendWithTravelTimes);
 router.post("/schedule-from-recommendation", controller.createScheduleFromRecommendation);
-
+router.post("/auto", controller.autoCreateScheduleFromRecommendation);
 
 
 module.exports = router;
