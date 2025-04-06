@@ -61,19 +61,18 @@ const TimetableUploadScreen = () => {
       </div>
 
       {/* 확인 버튼 */}
-      <button style={styles.button} onClick={() => navigate("/scanning")}>
+      <button style={styles.button} onClick={() => navigate("/dateselection")}>
         확인
       </button>
-
-      <BottomBar />
     </div>
   );
 };
 
 const styles = {
   container: {
-    width: "360px",
-    height: "800px",
+    width: "100vw",
+    height: "100vh",
+    margin: "0 auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",

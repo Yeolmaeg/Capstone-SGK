@@ -7,7 +7,7 @@ const ScannedScreen = () => {
   
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/mypage"); 
+      navigate("/timelineview"); 
     }, 3000);
 
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
@@ -23,8 +23,9 @@ const ScannedScreen = () => {
 
 const styles = {
   container: {
-    width: "360px",
-    height: "800px",
+    width: "100vw",
+    height: "100vh",
+    margin: "0 auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",

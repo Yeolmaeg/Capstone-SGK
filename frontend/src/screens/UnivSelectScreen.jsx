@@ -67,15 +67,15 @@ const UnivSelectScreen = () => {
         )}
       </div>
       <button style={styles.button} onClick={() => navigate("/timetable-upload")}>완료</button>
-      <BottomBar />
     </div>
   );
 };
 
 const styles = {
   container: {
-    width: "360px",
-    height: "800px",
+    width: "100vw",
+    height: "100vh",
+    margin: "0 auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -99,7 +99,7 @@ const styles = {
     alignItems: "center",
     width: "80%",
     maxWidth: "300px",
-    marginBottom: "200px",
+    marginBottom: "350px",
   },
   searchBox: {
     display: "flex",
