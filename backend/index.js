@@ -1,51 +1,41 @@
 const express = require("express");
 const cors = require("cors");
-const { Pool } = require("pg");
-const { createClient } = require("redis");
+const cron = require("node-cron");
+const db = require("./lib/db");
+const userRoutes = require("./routes/userRoutes");
+const scheduleRoutes = require('./routes/scheduleRoutes');
+const placeInfoRoutes = require("./routes/placeInfoRoutes");
+const addressRoutes = require("./routes/addressRoutes");
+const recommendationRoutes = require("./routes/recommendationRoutes");
+const autoScheduleRoutes = require("./routes/autoScheduleRoutes");
 const dotenv = require("dotenv");
+const { generateNextMonthRecurringSchedules } = require("./services/scheduleService");
+
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// PostgreSQL 연결 설정
-const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-});
-
-// Redis 클라이언트 생성 및 연결
-const redisClient = createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
-});
-
-redisClient.on("error", (err) => console.error("❌ Redis Connection Error:", err));
-
-redisClient.connect()
-  .then(() => console.log("✅ Redis Connected!"))
-  .catch(err => console.error("❌ Redis Connection Error:", err));
+app.use(cors());
+app.use(express.json());
+app.use("/user", userRoutes);
+app.use('/api', scheduleRoutes);
+app.use("/api", placeInfoRoutes);
+app.use("/api/recommendation", recommendationRoutes);
+app.use("/address", addressRoutes);
+app.use("/api", autoScheduleRoutes);
 
 // 서버 실행
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
 
-// PostgreSQL 연결 확인
-pool.query("SELECT NOW()")
+db.query("SELECT NOW()")
   .then(res => console.log("✅ PostgreSQL Connected!", res.rows[0]))
   .catch(err => console.error("❌ PostgreSQL Connection Error:", err));
 
-// Redis 연결 테스트 API
-app.get("/test-redis", async (req, res) => {
-  try {
-    await redisClient.set("testKey", "Hello from Redis!");
-    const value = await redisClient.get("testKey");
-    res.json({ message: "✅ Redis Connected!", value });
-  } catch (error) {
-    console.error("❌ Redis Connection Error:", error);
-    res.status(500).json({ error: "Redis connection failed" });
-  }
+// 매달 1일 00시에 반복 일정 생성(시간표 일정)
+cron.schedule("0 0 1 * *", async () => {
+  console.log("📆 매달 반복 일정 생성 시작");
+  await generateNextMonthRecurringSchedules();
 });
