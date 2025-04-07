@@ -8,3 +8,13 @@ exports.getPlaceById = async (id) => {
   );
   return result.rows[0] || null;
 };
+
+
+exports.getPlaceInfo = async (placeName) => {
+  // 예시: DB에서 place_name으로 장소 정보 찾기
+  const result = await db.query(
+    `SELECT * FROM places WHERE name = $1 LIMIT 1`,
+    [placeName]
+  );
+  return result.rows[0] || null;
+};

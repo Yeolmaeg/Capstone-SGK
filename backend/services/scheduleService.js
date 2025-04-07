@@ -1,5 +1,6 @@
 const db = require("../lib/db");
 const { v4: uuidv4 } = require("uuid");
+const { getDurations } = require("../services/travelTimeService");
 
 
 // 일정 전체 조회
@@ -56,21 +57,25 @@ exports.addSchedule = async ({
   is_recurring = false,
   source = "manual"
 }) => {
-  await db.query(
+  const result = await db.query(
     `INSERT INTO schedules (
-    id, user_id, title, start_time, end_time,
-      latitude, longitude, address,place_id,
+      id, user_id, title, start_time, end_time,
+      latitude, longitude, address, place_id,
       move_type, move_duration,
       walk_duration, transit_duration, drive_duration,
       is_recurring, source
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+     RETURNING *`,
     [
       id, user_id, title, start_time, end_time,
       latitude, longitude, address, place_id,
       move_type, move_duration,
-      walk_duration, transit_duration, drive_duration, is_recurring, source
+      walk_duration, transit_duration, drive_duration,
+      is_recurring, source
     ]
   );
+
+  return result.rows[0];
 };
 
 // 일정 삭제
@@ -258,4 +263,71 @@ exports.generateMonthRecurringSchedules = async () => {
   return {
     message: `✅ ${copied}개의 반복 일정이 한 달 치로 생성되었습니다.`,
   };
+};
+
+exports.createAutoSchedule = async ({ user_id, time, place, source = "recommendation" }) => {
+  const fromQuery = await db.query(
+    `SELECT address FROM schedules 
+     WHERE user_id = $1 AND end_time < $2 
+     ORDER BY end_time DESC 
+     LIMIT 1`,
+    [user_id, time]
+  );
+
+  const from = fromQuery.rows[0]?.address || "서울 성동구";
+
+  const durations = await getDurations({
+    from,
+    target: {
+      latitude: place.latitude,
+      longitude: place.longitude,
+    }
+  });
+
+  const durationMap = {
+    walking: durations.walk,
+    driving: durations.drive,
+    transit: durations.transit
+  };
+
+  let shortestType = "walking";
+  let shortestDuration = durations.walk;
+  for (const [type, dur] of Object.entries(durationMap)) {
+    if (dur !== null && dur < shortestDuration) {
+      shortestType = type;
+      shortestDuration = dur;
+    }
+  }
+
+  const start_time = new Date(time);
+  const end_time = new Date(start_time.getTime() + 60 * 60 * 1000);
+
+  const insertResult = await db.query(
+    `INSERT INTO schedules (
+      id, user_id, title, start_time, end_time,
+      latitude, longitude, address,
+      move_type, move_duration,
+      walk_duration, transit_duration, drive_duration,
+      is_recurring, source
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,false,$14)
+     RETURNING *`,
+    [
+      uuidv4(),
+      user_id,
+      place.name,
+      start_time,
+      end_time,
+      place.latitude,
+      place.longitude,
+      place.address,
+      shortestType,
+      shortestDuration,
+      durations.walk,
+      durations.transit,
+      durations.drive,
+      source
+    ]
+  );
+
+  return insertResult.rows[0]; 
 };

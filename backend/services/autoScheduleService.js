@@ -2,6 +2,7 @@ const db = require("../lib/db");
 const { addSchedule } = require("./scheduleService");
 const { v4: uuidv4 } = require("uuid");
 const { getPlaceInfoFromPerplexity } = require("./placeInfoService");
+const { getDurations } = require("./travelTimeService");
 
 
 // 전체 흐름: 프론트에서 장소명 입력 → 백엔드는 장소 정보 수집 → 
@@ -200,22 +201,58 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
       // 4. 일정 추가 (source: "from_place")
       const start_time = closestSlot.start_time;
       const end_time = new Date(new Date(start_time).getTime() + 60 * 60 * 1000).toISOString(); // 1시간짜리 일정
-  
+      
+      const from = closestSlot.between?.prev?.address || "서울 서대문문구"; 
+      // 5. 이동시간 계산
+const durations = await getDurations({
+  user_id: userId,
+  target: {
+    latitude: place.latitude,
+    longitude: place.longitude,
+  },
+  from
+});
+
+// 6. 최단 이동수단 선택
+const durationMap = {
+  walking: durations.walk,
+  driving: durations.drive,
+  transit: durations.transit,
+};
+
+let shortestType = "walking";
+let shortestDuration = durations.walk;
+
+for (const [type, time] of Object.entries(durationMap)) {
+  if (time !== null && time < shortestDuration) {
+    shortestType = type;
+    shortestDuration = time;
+  }
+}
       await addSchedule({
         user_id: userId,
-        title: place.title || placeName,
-        latitude: place.latitude,
-        longitude: place.longitude,
-        address: place.location,
-        start_time,
-        end_time,
-        source: "from_place"
+  title: place.title || placeName,
+  latitude: place.latitude,
+  longitude: place.longitude,
+  address: place.location,
+  start_time,
+  end_time,
+  move_type: shortestType,
+  move_duration: shortestDuration,
+  walk_duration: durations.walk,
+  transit_duration: durations.transit,
+  drive_duration: durations.drive,
+  source: "from_place"
       });
   
-      return { message: "✅ 일정 자동 추가 완료", title: place.title || placeName, start_time };
+      return { message: "✅ 일정 자동 추가 완료",
+        place: place,
+        start_time,
+        move_type: shortestType,
+        move_duration: shortestDuration 
+      };
     } catch (err) {
       console.error("❌ 자동 일정 생성 실패:", err.message);
       throw err;
     }
   };
-  

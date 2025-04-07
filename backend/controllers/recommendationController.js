@@ -1,5 +1,7 @@
 const service = require("../services/recommendationService");
 const travelTimeService = require("../services/travelTimeService"); 
+const db = require("../lib/db");
+const scheduleService = require("../services/scheduleService");
 
 exports.getRecommendation = async (req, res) => {
   const { userId, time } = req.query;
@@ -49,7 +51,7 @@ exports.saveRecommendation = async (req, res) => {
       place_id: placeId
     });
   } catch (err) {
-    console.error("❌ 추천 장소 저장 실패:", err.message);
+    console.error("❌ 추천 장소 저장 실패:",  err.response?.data || err.message);
     res.status(500).json({ error: "추천 장소 저장 실패" });
   }
 };
@@ -136,6 +138,86 @@ exports.createScheduleFromRecommendation = async (req, res) => {
     res.status(201).json({ message: "추천 일정 추가 완료" });
   } catch (err) {
     console.error("❌ 추천 일정 생성 에러:", err);
+    res.status(500).json({ error: "추천 일정 생성 실패" });
+  }
+};
+
+exports.autoCreateScheduleFromRecommendation = async (req, res) => {
+  const { user_id, time } = req.body;
+
+  try {
+    const places = await service.recommendPlace(user_id, time);
+    const place = places.recommendedPlaces[0];
+
+    const place_id = await service.saveRecommendation({ user_id, place });
+
+    const prev = await db.query(`
+      SELECT address FROM schedules 
+      WHERE user_id = $1 AND end_time < $2 
+      ORDER BY end_time DESC 
+      LIMIT 1
+    `, [user_id, time]);
+    const from = prev.rows[0]?.address || "서울 성동구";
+
+    const durations = await travelTimeService.getDurations({
+      user_id,
+      target: {
+        latitude: place.latitude,
+        longitude: place.longitude,
+      },
+      from,
+    });
+
+    const durationMap = {
+      walking: durations.walk,
+      driving: durations.drive,
+      transit: durations.transit,
+    };
+
+    let shortestType = "walking";
+    let shortestDuration = durations.walk;
+    for (const [type, duration] of Object.entries(durationMap)) {
+      if (duration !== null && duration < shortestDuration) {
+        shortestType = type;
+        shortestDuration = duration;
+      }
+    }
+
+    const start_time = new Date(time);
+    const end_time = new Date(start_time.getTime() + 60 * 60 * 1000);
+
+    await scheduleService.addSchedule({
+      user_id,
+      title: place.name,
+      address: place.address,
+      latitude: place.latitude,
+      longitude: place.longitude,
+      place_id,
+      start_time,
+      end_time,
+      move_type: shortestType,
+      move_duration: shortestDuration,
+      walk_duration: durations.walk,
+      transit_duration: durations.transit,
+      drive_duration: durations.drive,
+      source: "recommendation",
+      is_recurring: false
+    });
+
+    const saved = await db.query(
+      `SELECT * FROM schedules 
+       WHERE user_id = $1 AND title = $2 AND start_time = $3`,
+      [user_id, place.name, start_time]
+    );
+
+    res.status(201).json({
+      message: "추천 + 이동시간 + 일정 자동 생성 완료",
+      schedule: saved.rows[0],
+      place
+    });
+
+  } catch (err) {
+    console.error("❌ 자동 추천 일정 생성 실패:", err.message);
     res.status(500).json({ error: "추천 일정 생성 실패" });
   }
 };

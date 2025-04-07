@@ -5,6 +5,8 @@ CREATE TABLE users (
   email VARCHAR NOT NULL,
   school VARCHAR,
   school_id INTEGER,
+  start_term INTEGER,
+  end_term INTEGER,
   name VARCHAR,
   created_at TIMESTAMP DEFAULT NOW()
 );
