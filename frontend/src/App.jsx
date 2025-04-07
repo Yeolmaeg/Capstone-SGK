@@ -13,6 +13,7 @@ import EditScheduleScreen from "./screens/EditScheduleScreen";
 import RecommendationScreen from "./screens/RecommendationScreen";
 import RecommendationDetailScreen from "./screens/RecommendationDetailScreen";
 import EditRecommendationScreen from "./screens/EditRecommendationScreen";
+import DebugTest from "./screens/DebugTest";
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
         <Route path="/recommendation" element={<RecommendationScreen />} />
         <Route path="/recommendationdetail" element={<RecommendationDetailScreen />} />
         <Route path="/editrecommendation" element={<EditRecommendationScreen />} />
+        <Route path="/debug" element={<DebugTest />} />
       </Routes>
     </Router>
   );
