@@ -166,4 +166,35 @@ exports.updateSchedule = async (req, res) => {
   }
 };
 
+// 0407 새로 추가
+// 피드백 저장
+exports.saveFeedback = async (req, res) => {
+  const { user_id, recommendation_id, is_satisfied } = req.body;
+
+
+  if (!user_id || !recommendation_id || typeof is_satisfied !== "boolean") {
+    return res.status(400).json({ error: "필수 항목 누락 또는 형식 오류" });
+  }
+
+  console.log("📝 피드백 저장 요청:", req.body);
+
+  try {
+    const result = await db.query(
+      `UPDATE recommendations
+       SET is_satisfied = $1
+       WHERE id = $2 AND user_id = $3
+       RETURNING *`,
+      [is_satisfied, recommendation_id, user_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "추천 기록을 찾을 수 없습니다." });
+    }
+
+    res.status(200).json({ message: "피드백 저장 완료", data: result.rows[0] });
+  } catch (err) {
+    console.error("❌ 피드백 저장 오류:", err.message);
+    res.status(500).json({ error: "피드백 저장 실패" });
+  }
+};
 
