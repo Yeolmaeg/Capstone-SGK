@@ -8,6 +8,7 @@ import ColorPicker from "../components/ColorPicker";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
+import { addSchedule } from "../api/schedule";
 
 const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
   <input
@@ -60,16 +61,34 @@ const AddScheduleScreen = () => {
   const maxTime = new Date();
   maxTime.setHours(23, 0);
 
-  const handleDone = () => {
-    const newEvent = {
-      title: title || "제목 없음",
-      start: new Date(startTime),
-      end: new Date(endTime),
-      color: selectedColor,
-      place,
-    };
-
-    navigate("/timelineview", { state: { newEvent } });
+  const handleDone = async () => {
+    console.log("✅ handleDone() 호출됨");
+    alert("일정 저장 시도");
+    try {
+      const scheduleData = {
+        user_id: "6b3bd5e1-f8fc-4f80-a72c-9b8a770ccb38",
+        title: title || "제목 없음",
+        start_time: new Date(startTime).toISOString(),
+        end_time: new Date(endTime).toISOString(),
+        address: place,
+        latitude: 37.5445,  // 예시 좌표, 추후 장소 검색 API와 연동
+        longitude: 127.0553,
+        is_recurring: false,
+      };
+  
+      await addSchedule(scheduleData);
+      const newEvent = {
+        title: scheduleData.title,
+        start: new Date(scheduleData.start_time),
+        end: new Date(scheduleData.end_time),
+        place: scheduleData.address,
+        color: selectedColor,
+      };
+      console.log("✅ newEvent 전달됨:", newEvent);
+      navigate("/timelineview", { state: { newEvent} });
+    } catch (err) {
+      console.error("❌ 일정 추가 실패:", err);
+    }
   };
 
   return (
@@ -251,3 +270,4 @@ const styles = {
 };
 
 export default AddScheduleScreen;
+ 

@@ -1,11 +1,19 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const isDocker = process.env.DOCKER === 'true';
+
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5173, // Vite 서버를 5173 포트에서 실행
-    host: '0.0.0.0', // Docker 컨테이너에서 접근 가능하게 설정
-    strictPort: true
-  }
+    port: 5173,
+    host: '0.0.0.0',
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: isDocker ? 'http://backend:5000' : 'http://localhost:5000',
+        changeOrigin: true,
+      },
+    },
+  },
 });

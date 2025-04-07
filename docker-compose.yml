@@ -10,6 +10,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:dayfull@postgresql:5432/dayfullpg
       - REDIS_URL=redis://redis:6379
+    env_file:
+      - ./backend/.env         # ✅ 이 줄 추가!  
     depends_on:
       - postgresql
       - redis
@@ -32,7 +34,10 @@ services:
         - ./frontend:/app
     command: sh -c "npm install && npm run dev"
     environment:
+      - DOCKER=true
       - VITE_PORT=5173
+    env_file:
+      - ./frontend/.env.docker   # 도커에선 이 파일을 사용  
     networks:
       - app-network
 

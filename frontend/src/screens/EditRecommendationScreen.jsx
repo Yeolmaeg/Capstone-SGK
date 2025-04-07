@@ -127,7 +127,7 @@ const EditRecommendationScreen = () => {
             <div style={{ ...styles.buttonRow, justifyContent: "center" }}>
               <button style={styles.tagButton}>도보</button>
               <button style={styles.tagButton}>대중교통</button>
-              <button style={styles.tagButton}>차차</button>
+              <button style={styles.tagButton}>자차</button>
             </div>
             <div style={{ ...styles.subtext, textAlign: "center" }}>약 4분 소요</div>
           </div>

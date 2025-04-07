@@ -145,26 +145,29 @@ const TimelineViewScreen = () => {
     }
   }, []);
 
+  // ✅ 일정 추가 감지
   useEffect(() => {
-    const newEvent = location.state?.newEvent;
-    if (newEvent) {
-      setEvents((prev) => {
-        const isDuplicate = prev.some(
-          (e) =>
-            e.title === newEvent.title &&
-            e.start.getTime() === newEvent.start.getTime() &&
-            e.end.getTime() === newEvent.end.getTime()
-        );
-        const updated = isDuplicate ? prev : [...prev, newEvent];
+    const state = location.state;
+    if (state?.newEvent) {
+      console.log("📦 새 일정 감지됨:", state.newEvent);
 
+      const newEvent = {
+        ...state.newEvent,
+        start: new Date(state.newEvent.start),
+        end: new Date(state.newEvent.end),
+      };
+
+      setEvents((prev) => {
+        const updated = [...prev, newEvent];
         localStorage.setItem("savedEvents", JSON.stringify(updated));
         return updated;
       });
 
       navigate(location.pathname, { replace: true, state: null });
     }
-  }, [location, navigate]);
+  }, [location.key]);
 
+  // 삭제된 일정 반영
   useEffect(() => {
     const deletedEvent = location.state?.deletedEvent;
     if (deletedEvent) {
@@ -181,7 +184,7 @@ const TimelineViewScreen = () => {
 
       navigate("/timelineview", { replace: true });
     }
-  }, [location, navigate]);
+  }, [location]);
 
   useEffect(() => {
     const startDate = location.state?.startDate;
@@ -192,7 +195,7 @@ const TimelineViewScreen = () => {
       setSelectedMonth(moment(start).month() + 1);
     }
   }, [location]);
-  
+
   return (
     <div style={styles.container} {...handlers}>
       <TimelineTopBar
