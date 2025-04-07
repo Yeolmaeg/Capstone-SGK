@@ -167,7 +167,7 @@ exports.updateSchedule = async (req, res) => {
 };
 
 // 0407 새로 추가
-// // 피드백 저장
+// 피드백 저장
 exports.saveFeedback = async (req, res) => {
   const { user_id, recommendation_id, is_satisfied } = req.body;
 
