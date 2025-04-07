@@ -8,7 +8,7 @@ exports.createUser = async (req, res) => {
   try {
     const id = await service.createUser({ email, name, school, school_id });
     
-    await redis.sadd(`user:${id}:keywords`, "대학생");
+    await redis.sadd(`user:${id}:preferences`, "대학생");
     console.log(`📌 Redis에 '대학생' 키워드 추가 완료 (user:${id})`);
     
     res.status(201).json({ message: "사용자 생성 완료", id });
