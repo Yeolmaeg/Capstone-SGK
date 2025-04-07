@@ -4,8 +4,8 @@ const db = require("../lib/db");
 const { v4: uuidv4 } = require("uuid");
 const scheduleService = require("../services/scheduleService");
 
-const API_URL = "https://api.perplexity.ai/chat/completions";
-const API_KEY = "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";
+const API_URL = "...";
+const API_KEY = "...";
 
 function parseRecommendations(rawText) {
   try {
