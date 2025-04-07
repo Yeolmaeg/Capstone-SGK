@@ -1,4 +1,3 @@
-// 추천 코드 라인별설명 확인
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/recommendationController");
