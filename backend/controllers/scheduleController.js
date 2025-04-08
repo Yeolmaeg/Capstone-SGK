@@ -4,6 +4,7 @@ const { getPreviousSchedule } = require("../services/recommendationService");
 const { v4: uuidv4 } = require("uuid");
 
 
+
 // 전제 일정 조회
 exports.getSchedules = async (req, res) => {
   const { user_id } = req.query;
@@ -166,13 +167,11 @@ exports.updateSchedule = async (req, res) => {
   }
 };
 
-// 0407 새로 추가
 // 피드백 저장
 exports.saveFeedback = async (req, res) => {
-  const { user_id, recommendation_id, is_satisfied } = req.body;
+  const { user_id, recommendation_id, satisfied } = req.body;
 
-
-  if (!user_id || !recommendation_id || typeof is_satisfied !== "boolean") {
+  if (!user_id || !recommendation_id || typeof satisfied !== "boolean") {
     return res.status(400).json({ error: "필수 항목 누락 또는 형식 오류" });
   }
 
@@ -181,10 +180,10 @@ exports.saveFeedback = async (req, res) => {
   try {
     const result = await db.query(
       `UPDATE recommendations
-       SET is_satisfied = $1
+       SET satisfied = $1
        WHERE id = $2 AND user_id = $3
        RETURNING *`,
-      [is_satisfied, recommendation_id, user_id]
+      [satisfied, recommendation_id, user_id]
     );
 
     if (result.rows.length === 0) {
@@ -197,4 +196,3 @@ exports.saveFeedback = async (req, res) => {
     res.status(500).json({ error: "피드백 저장 실패" });
   }
 };
-
