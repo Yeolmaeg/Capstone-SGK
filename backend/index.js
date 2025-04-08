@@ -13,6 +13,8 @@ const autoScheduleRoutes = require("./routes/autoScheduleRoutes");
 // const distanceRoutes = require("./routes/distanceRoutes");
 const dotenv = require("dotenv");
 const { generateNextMonthRecurringSchedules } = require("./services/scheduleService");
+const preferenceRoutes = require('./routes/preferenceRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
 
 
 dotenv.config();
@@ -30,9 +32,13 @@ app.use("/api", placeInfoRoutes);
 app.use("/api/recommendation", recommendationRoutes);
 app.use("/address", addressRoutes);
 app.use("/api", autoScheduleRoutes);
-app.use("/upload", uploadRoutes);
-app.use("/api", timetableRoutes);
-app.use("/api", distanceRoutes);
+app.use("/recommendation", require("./routes/recommendationRoutes"));
+app.use('/api/preferences', preferenceRoutes);
+app.use('/api', feedbackRoutes);
+
+// app.use("/api", distanceRoutes);
+// app.use("/upload", uploadRoutes);
+// app.use("/api", timetableRoutes);
 
 
 // 서버 실행
