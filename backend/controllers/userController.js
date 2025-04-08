@@ -1,8 +1,6 @@
 const service = require("../services/userService");
-// 0407 이거 한줄 require 추가
 const redis = require("../lib/redis");
 
-// 0407 아래 함수 한개만 수정했어요
 exports.createUser = async (req, res) => {
   const { email, name, school, school_id } = req.body;
   try {
