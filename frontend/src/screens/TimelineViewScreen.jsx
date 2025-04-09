@@ -10,6 +10,8 @@ import TimelineTopBar from "../components/TimelineTopBar";
 import FloatingButton from "../components/FloatingButton";
 import PlaceModal from "../components/PlaceModal";
 import Event from "../components/Event";
+import { getSchedules } from "../api/schedule"; 
+
 
 const localizer = momentLocalizer(moment);
 
@@ -133,55 +135,71 @@ const TimelineViewScreen = () => {
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem("savedEvents");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      const restored = parsed.map((event) => ({
-        ...event,
-        start: new Date(event.start),
-        end: new Date(event.end),
-      }));
-      setEvents(restored);
-    }
+    const fetchSchedules = async () => {
+      try {
+        const user_id = "5012f198-ca58-42ca-afde-41e1459a4cef";
+        const data = await getSchedules(user_id);
+  
+        const formatted = data.map((e) => ({
+          ...e,
+          start: new Date(e.start_time),
+          end: new Date(e.end_time),
+          place: e.address,
+          color: e.color || "#3174ad",
+        }));
+  
+        // ✅ 중복 제거 (id 기준)
+        const unique = [];
+        const seen = new Set();
+        for (const e of formatted) {
+          if (!seen.has(e.id)) {
+            seen.add(e.id);
+            unique.push(e);
+          }
+        }
+  
+        setEvents(unique);
+      } catch (err) {
+        console.error("❌ 일정 불러오기 실패:", err);
+      }
+    };
+  
+    fetchSchedules();
   }, []);
 
-  // ✅ 일정 추가 감지
   useEffect(() => {
     const state = location.state;
     if (state?.newEvent) {
       console.log("📦 새 일정 감지됨:", state.newEvent);
-
+  
       const newEvent = {
         ...state.newEvent,
         start: new Date(state.newEvent.start),
         end: new Date(state.newEvent.end),
       };
-
+  
       setEvents((prev) => {
-        const updated = [...prev, newEvent];
-        localStorage.setItem("savedEvents", JSON.stringify(updated));
-        return updated;
+        const isDuplicate = prev.some((e) => e.id === newEvent.id);
+        if (isDuplicate) return prev;
+        return [...prev, newEvent];
       });
-
+  
       navigate(location.pathname, { replace: true, state: null });
     }
   }, [location.key]);
+  
 
-  // 삭제된 일정 반영
   useEffect(() => {
     const deletedEvent = location.state?.deletedEvent;
     if (deletedEvent) {
-      setEvents((prev) => {
-        const filtered = prev.filter(
+      setEvents((prev) =>
+        prev.filter(
           (e) =>
             e.title !== deletedEvent.title ||
             e.start.getTime() !== new Date(deletedEvent.start).getTime() ||
             e.end.getTime() !== new Date(deletedEvent.end).getTime()
-        );
-        localStorage.setItem("savedEvents", JSON.stringify(filtered));
-        return filtered;
-      });
-
+        )
+      );
       navigate("/timelineview", { replace: true });
     }
   }, [location]);
@@ -196,6 +214,16 @@ const TimelineViewScreen = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const updatedEvent = location.state?.updatedEvent;
+    if (updatedEvent) {
+      setEvents((prev) =>
+        prev.map((e) => (e.id === updatedEvent.id ? updatedEvent : e))
+      );
+      navigate("/timelineview", { replace: true, state: null });
+    }
+  }, [location]);
+  
   return (
     <div style={styles.container} {...handlers}>
       <TimelineTopBar

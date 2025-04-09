@@ -1,11 +1,40 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { autoAddSchedule } from "../api/autoschedule"; 
 
 const PlaceModal = ({ onClose }) => {
   const [place, setPlace] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    console.log("입력된 장소:", place);
-    onClose();
+  const handleSubmit = async () => {
+    if (!place.trim()) return;
+    setLoading(true);
+
+    try {
+      const userId = "5012f198-ca58-42ca-afde-41e1459a4cef"; // 사용자 ID 하드코딩 예시
+      const { schedule, place: placeInfo } = await autoAddSchedule(place, userId);
+
+      const newEvent = {
+        id: schedule.id,
+        title: schedule.title,
+        start: new Date(schedule.start_time),
+        end: new Date(schedule.end_time),
+        place: schedule.address,
+        latitude: schedule.latitude,
+        longitude: schedule.longitude,
+        color: schedule.color || "#ebe6b6",
+      };
+
+      console.log("✅ 자동 일정 추가됨:", newEvent);
+      onClose(); // 모달 닫고
+      navigate("/timelineview", { state: { newEvent } }); // 일정 추가
+    } catch (err) {
+      alert("❌ 일정 생성에 실패했습니다.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -26,15 +55,24 @@ const PlaceModal = ({ onClose }) => {
               placeholder="장소명을 입력해주세요."
               value={place}
               onChange={handleInputChange}
+              disabled={loading}
             />
           </div>
         </div>
 
         <div style={styles.buttonGroup}>
-          <button style={styles.submitButton} onClick={handleSubmit}>
-            완료
+          <button
+            style={styles.submitButton}
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? "처리 중..." : "완료"}
           </button>
-          <button style={styles.cancelButton} onClick={onClose}>
+          <button
+            style={styles.cancelButton}
+            onClick={onClose}
+            disabled={loading}
+          >
             취소
           </button>
         </div>
@@ -43,6 +81,7 @@ const PlaceModal = ({ onClose }) => {
   );
 };
 
+// styles 그대로 유지
 const styles = {
   overlay: {
     position: "fixed",
@@ -55,6 +94,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     zIndex: 9999,
+    
   },
   container: {
     backgroundColor: "#fff",
@@ -87,7 +127,7 @@ const styles = {
   },
   input: {
     width: "85%",
-    padding: "10px 10px 10px 36px", // 아이콘 공간 확보
+    padding: "10px 10px 10px 36px",
     borderRadius: "8px",
     border: "1px solid #ccc",
     fontSize: "14px",
