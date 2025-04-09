@@ -1,26 +1,31 @@
+import React from "react";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // useNavigate 훅 임포트
 
-const DoneTopBar = ({ logo, buttonLabel, onButtonClick }) => {
-  const navigate = useNavigate();
+const DoneTopBar = ( {onDone}) => {
+  const navigate = useNavigate(); // navigate 함수 초기화
 
   return (
     <div style={styles.topBar}>
-      <span style={styles.logo} onClick={() => navigate("/timelineview")}>Dayfull</span>
-      {buttonLabel && <button style={styles.button} onClick={onButtonClick}>{buttonLabel}</button>}
+      <span style={styles.logo} onClick={() => navigate("/timelineview")}>
+        Dayfull
+      </span>
+      <button style={styles.doneBtn} onClick={onDone}>
+        완료
+      </button>
     </div>
   );
 };
 
 DoneTopBar.propTypes = {
-  logo: PropTypes.string,
-  buttonLabel: PropTypes.string,
-  onButtonClick: PropTypes.func,
+  selectedYear: PropTypes.number.isRequired,
+  selectedMonth: PropTypes.number.isRequired,
+  onMonthChange: PropTypes.func.isRequired,
 };
 
 const styles = {
   topBar: {
-    width: "100%",
+    width: "100vw",
     height: "50px",
     display: "flex",
     justifyContent: "space-between",
@@ -39,13 +44,14 @@ const styles = {
     cursor: "pointer",
     marginLeft: "10px",
   },
-  button: {
+  doneBtn: {
     background: "none",
     border: "none",
-    fontSize: "14px",
-    color: "#333",
+    fontSize: "16px",
     fontWeight: "bold",
+    color: "#000",
     cursor: "pointer",
+    marginRight: "10px",
   },
 };
 

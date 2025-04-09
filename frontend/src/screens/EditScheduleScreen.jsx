@@ -6,6 +6,7 @@ import { ko } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import CancelTopBar from "../components/CancelTopBar";
 import ColorPicker from "../components/ColorPicker";
+import { updateSchedule } from "../api/schedule";
 
 const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
   <input
@@ -44,48 +45,68 @@ const EditScheduleScreen = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date(Date.now() + 3600000));
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
 
   useEffect(() => {
     if (!originalEvent) {
       navigate("/timelineview", { replace: true });
       return;
     }
-
+  
     const start = new Date(originalEvent.start);
     const end = new Date(originalEvent.end);
+  
+    setTitle(location.state?.selectedTitle || originalEvent.title || "");
+    setPlace(location.state?.selectedPlace || originalEvent.place || "");
+    setSelectedColor(location.state?.selectedColor || originalEvent.color || "#ebe6b6");
+    setSelectedDate(location.state?.selectedDate ? new Date(location.state.selectedDate) : start);
+    setStartTime(location.state?.selectedStartTime ? new Date(location.state.selectedStartTime) : start);
+    setEndTime(location.state?.selectedEndTime ? new Date(location.state.selectedEndTime) : end);
+    setLatitude(location.state?.latitude || originalEvent.latitude || null);
+    setLongitude(location.state?.longitude || originalEvent.longitude || null);
+  }, [originalEvent, location.state, navigate]);
+  
 
-    setTitle(originalEvent.title || "");
-    setPlace(originalEvent.place || "");
-    setSelectedColor(originalEvent.color || "#ebe6b6");
-    setSelectedDate(start);
-    setStartTime(start);
-    setEndTime(end);
-  }, [originalEvent, navigate]);
+  useEffect(() => {
+    if (location.state?.selectedPlace) setPlace(location.state.selectedPlace);
+    if (location.state?.selectedTitle) setTitle(location.state.selectedTitle);
+    if (location.state?.selectedColor) setSelectedColor(location.state.selectedColor);
+    if (location.state?.selectedStartTime) setStartTime(new Date(location.state.selectedStartTime));
+    if (location.state?.selectedEndTime) setEndTime(new Date(location.state.selectedEndTime));
+    if (location.state?.selectedDate) setSelectedDate(new Date(location.state.selectedDate));
+    if (location.state?.latitude) setLatitude(location.state.latitude);
+    if (location.state?.longitude) setLongitude(location.state.longitude);
+  }, [location.state]);
 
-  const handleSave = () => {
-    const updatedEvent = {
-      ...originalEvent,
+  const handleSave = async () => {
+    const updatedData = {
       title,
-      place,
+      address: place,
       color: selectedColor,
-      start: new Date(startTime),
-      end: new Date(endTime),
+      start_time: new Date(startTime).toISOString(),
+      end_time: new Date(endTime).toISOString(),
+      is_recurring: false,
+      latitude,
+      longitude,
     };
 
-    const stored = localStorage.getItem("savedEvents");
-    const events = stored ? JSON.parse(stored) : [];
+    try {
+      await updateSchedule(originalEvent.id, updatedData);
+      console.log("✅ 일정 수정 완료:", updatedData);
 
-    const updatedEvents = events.map((e) =>
-      e.title === originalEvent.title &&
-      new Date(e.start).getTime() === new Date(originalEvent.start).getTime() &&
-      new Date(e.end).getTime() === new Date(originalEvent.end).getTime()
-        ? updatedEvent
-        : e
-    );
+      const updatedEvent = {
+        ...originalEvent,
+        ...updatedData,
+        start: new Date(updatedData.start_time),
+        end: new Date(updatedData.end_time),
+        place: updatedData.address,
+      };
 
-    localStorage.setItem("savedEvents", JSON.stringify(updatedEvents));
-
-    navigate("/timelineview", { state: { updatedEvent } });
+      navigate("/timelineview", { state: { updatedEvent } });
+    } catch (err) {
+      console.error("❌ 일정 수정 실패:", err);
+    }
   };
 
   if (!originalEvent) return null;
@@ -100,7 +121,6 @@ const EditScheduleScreen = () => {
       <CancelTopBar />
       <div style={styles.content}>
         <div style={styles.formWrapper}>
-          {/* 일정명 */}
           <div style={styles.inputGroup}>
             <div style={styles.inputWithIcon}>
               <ColorPicker selectedColor={selectedColor} onChange={setSelectedColor} />
@@ -115,7 +135,6 @@ const EditScheduleScreen = () => {
             <div style={styles.divider} />
           </div>
 
-          {/* 장소 */}
           <div style={styles.inputGroup}>
             <div style={styles.inputWithIcon}>
               <FiMapPin style={styles.icon} />
@@ -124,13 +143,25 @@ const EditScheduleScreen = () => {
                 placeholder="장소를 입력해주세요."
                 style={styles.input}
                 value={place}
-                onChange={(e) => setPlace(e.target.value)}
+                readOnly
+                onClick={() =>
+                  navigate("/selectlocation", {
+                    state: {
+                      returnTo: "/editschedule",
+                      selectedTitle: title,
+                      selectedColor: selectedColor,
+                      selectedStartTime: startTime,
+                      selectedEndTime: endTime,
+                      selectedDate: selectedDate,
+                      event: originalEvent,
+                    },
+                  })
+                }
               />
             </div>
             <div style={styles.divider} />
           </div>
 
-          {/* 날짜 */}
           <div style={styles.inputGroup}>
             <div style={styles.inputWithIcon}>
               <FiClock style={styles.icon} />
@@ -144,7 +175,6 @@ const EditScheduleScreen = () => {
             </div>
           </div>
 
-          {/* 시간 */}
           <div style={styles.inputGroup}>
             <div style={styles.timeRow}>
               <DatePicker

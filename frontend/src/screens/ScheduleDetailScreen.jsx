@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMapPin, FiClock } from "react-icons/fi";
 import DeleteTopBar from "../components/DeleteTopBar";
+import { deleteSchedule } from "../api/schedule";
 
 const ScheduleDetailScreen = () => {
   const navigate = useNavigate();
@@ -16,20 +17,18 @@ const ScheduleDetailScreen = () => {
     console.log("📦 전달받은 event:", event);
   }, [event, navigate]);
 
-  const handleDelete = () => {
-    const stored = localStorage.getItem("savedEvents");
-    if (!stored) return;
-
-    const parsed = JSON.parse(stored);
-    const filtered = parsed.filter(
-      (e) =>
-        e.title !== event.title ||
-        new Date(e.start).getTime() !== new Date(event.start).getTime() ||
-        new Date(e.end).getTime() !== new Date(event.end).getTime()
-    );
-
-    localStorage.setItem("savedEvents", JSON.stringify(filtered));
-    navigate("/timelineview", { state: { deletedEvent: event } });
+  const handleDelete = async () => {
+    try {
+      // ✅ DB에서 삭제 요청
+      const res = await deleteSchedule(event.id);
+      console.log("✅ DB에서 일정 삭제 성공:", res.data); // 여기! 응답 출력
+  
+      // ✅ 화면 이동
+      navigate("/timelineview", { state: { deletedEvent: event } });
+    } catch (error) {
+      console.error("❌ 일정 삭제 실패:", error);
+      alert("일정 삭제 중 문제가 발생했습니다.");
+    }
   };
 
   const handleEdit = () => {

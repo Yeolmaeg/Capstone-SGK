@@ -1,6 +1,7 @@
 // AddScheduleScreen.jsx
 import React, { useState, forwardRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
 import { FiMapPin, FiClock } from "react-icons/fi";
 import CancelTopBar from "../components/CancelTopBar";
@@ -55,29 +56,44 @@ const AddScheduleScreen = () => {
   const [endTime, setEndTime] = useState(slot?.end || new Date(Date.now() + 3600000));
   const [title, setTitle] = useState("");
   const [place, setPlace] = useState("");
+  const [latitude, setLatitude] = useState(null);
+  const [longtitude, setLongitude] = useState(null);
+
 
   const minTime = new Date();
   minTime.setHours(6, 0);
   const maxTime = new Date();
   maxTime.setHours(23, 0);
 
+  useEffect(() => {
+    if (location.state?.selectedPlace) setPlace(location.state.selectedPlace);
+    if (location.state?.selectedTitle) setTitle(location.state.selectedTitle);
+    if (location.state?.selectedColor) setSelectedColor(location.state.selectedColor);
+    if (location.state?.selectedStartTime) setStartTime(new Date(location.state.selectedStartTime));
+    if (location.state?.selectedEndTime) setEndTime(new Date(location.state.selectedEndTime));
+    if (location.state?.selectedDate) setSelectedDate(new Date(location.state.selectedDate));
+    if (location.state?.latitude) setLatitude(location.state.latitude);
+    if (location.state?.longtitude) setLongitude(location.state.longitude);
+  }, [location.state]);
+
   const handleDone = async () => {
     console.log("✅ handleDone() 호출됨");
-    alert("일정 저장 시도");
     try {
       const scheduleData = {
-        user_id: "6b3bd5e1-f8fc-4f80-a72c-9b8a770ccb38",
+        user_id: "5012f198-ca58-42ca-afde-41e1459a4cef",
         title: title || "제목 없음",
         start_time: new Date(startTime).toISOString(),
         end_time: new Date(endTime).toISOString(),
         address: place,
-        latitude: 37.5445,  // 예시 좌표, 추후 장소 검색 API와 연동
-        longitude: 127.0553,
+        latitude: latitude,  // 예시 좌표, 추후 장소 검색 API와 연동
+        longitude: longtitude,
         is_recurring: false,
+        color: selectedColor,
       };
   
-      await addSchedule(scheduleData);
+      const response =await addSchedule(scheduleData);
       const newEvent = {
+        id: response.id,
         title: scheduleData.title,
         start: new Date(scheduleData.start_time),
         end: new Date(scheduleData.end_time),
@@ -120,7 +136,20 @@ const AddScheduleScreen = () => {
                 placeholder="장소를 입력해주세요."
                 style={styles.input}
                 value={place}
-                onChange={(e) => setPlace(e.target.value)}
+                readOnly
+                onClick={() =>
+                  navigate("/selectlocation", {
+                    state: {
+                      returnTo: "/addschedule", // 돌아올 곳 명시
+                      selectedTitle: title,
+                      selectedColor: selectedColor,
+                      selectedStartTime: startTime,
+                      selectedEndTime: endTime,
+                      selectedDate: selectedDate,
+                      selectedSlot: slot,
+                    },
+                  })
+                }
               />
             </div>
             <div style={styles.divider} />
