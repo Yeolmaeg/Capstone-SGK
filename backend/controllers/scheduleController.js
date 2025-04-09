@@ -26,7 +26,8 @@ exports.getSchedules = async (req, res) => {
         transit_duration: schedule.transit_duration,
         drive_duration: schedule.drive_duration, 
         created_at: schedule.created_at,
-        source: schedule.source
+        source: schedule.source,
+        color: schedule.color
       }));
     res.json(enriched);
   } catch (err) {
@@ -60,7 +61,8 @@ exports.getScheduleById = async (req, res) => {
       transit_duration: schedule.transit_duration,
       drive_duration: schedule.drive_duration,
       created_at: schedule.created_at,
-      source: schedule.source
+      source: schedule.source,
+      color: schedule.color
     };
 
     res.json(enriched);
@@ -88,7 +90,8 @@ exports.addSchedule = async (req, res) => {
     transit_duration = null,
     drive_duration = null,
     is_recurring = false,
-    source = "manual"
+    source = "manual",
+    color
   } = req.body;
 
   console.log("➕ 일정 추가 요청:", req.body);
@@ -102,15 +105,15 @@ exports.addSchedule = async (req, res) => {
         latitude, longitude, address, place_id,
         move_type, move_duration,
         walk_duration, transit_duration, drive_duration,
-        is_recurring, source
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+        is_recurring, source, color
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
       RETURNING *`,
       [
         id, user_id, finalTitle, start_time, end_time,
         latitude, longitude, address, place_id,
         move_type, move_duration,
         walk_duration, transit_duration, drive_duration,
-        is_recurring, source
+        is_recurring, source, color
       ]
     );
 

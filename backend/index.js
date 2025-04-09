@@ -30,9 +30,9 @@ app.use("/api", placeInfoRoutes);
 app.use("/api/recommendation", recommendationRoutes);
 app.use("/address", addressRoutes);
 app.use("/api", autoScheduleRoutes);
-app.use("/upload", uploadRoutes);
-app.use("/api", timetableRoutes);
-app.use("/api", distanceRoutes);
+//app.use("/upload", uploadRoutes);
+//app.use("/api", timetableRoutes);
+//app.use("/api", distanceRoutes);
 
 
 // 서버 실행

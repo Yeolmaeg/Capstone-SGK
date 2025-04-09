@@ -242,7 +242,8 @@ for (const [type, time] of Object.entries(durationMap)) {
   walk_duration: durations.walk,
   transit_duration: durations.transit,
   drive_duration: durations.drive,
-  source: "from_place"
+  source: "from_place",
+  color: "#EBE6B6"
       });
   
       return { message: "✅ 일정 자동 추가 완료",

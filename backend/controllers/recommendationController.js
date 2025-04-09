@@ -87,7 +87,7 @@ exports.recommendWithTravelTimes = async (req, res) => {
       hours: place.hours,
       walk_duration: times.walk,
       transit_duration: times.transit,
-      drive_duration: times.drive
+      drive_duration: times.drive,
     });
   } catch (err) {
     console.error("❌ 추천 + 이동시간 API 실패:", err);
@@ -132,7 +132,8 @@ exports.createScheduleFromRecommendation = async (req, res) => {
       transit_duration,
       drive_duration,
       source: "recommendation",
-      is_recurring: false
+      is_recurring: false,
+      color
     });
 
     res.status(201).json({ message: "추천 일정 추가 완료" });
@@ -201,7 +202,8 @@ exports.autoCreateScheduleFromRecommendation = async (req, res) => {
       transit_duration: durations.transit,
       drive_duration: durations.drive,
       source: "recommendation",
-      is_recurring: false
+      is_recurring: false,
+      color 
     });
 
     const saved = await db.query(
