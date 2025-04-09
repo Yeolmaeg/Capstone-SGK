@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BottomBar from "../components/BottomBar";
 
 const semesters = [
   "2025년 1학기",

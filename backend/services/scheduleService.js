@@ -55,7 +55,8 @@ exports.addSchedule = async ({
   transit_duration = null,
   drive_duration = null,
   is_recurring = false,
-  source = "manual"
+  source = "manual",
+  color = null
 }) => {
   const result = await db.query(
     `INSERT INTO schedules (
@@ -63,15 +64,15 @@ exports.addSchedule = async ({
       latitude, longitude, address, place_id,
       move_type, move_duration,
       walk_duration, transit_duration, drive_duration,
-      is_recurring, source
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+      is_recurring, source, color
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
      RETURNING *`,
     [
       id, user_id, title, start_time, end_time,
       latitude, longitude, address, place_id,
       move_type, move_duration,
       walk_duration, transit_duration, drive_duration,
-      is_recurring, source
+      is_recurring, source, color
     ]
   );
 
@@ -80,7 +81,9 @@ exports.addSchedule = async ({
 
 // 일정 삭제
 exports.deleteSchedule = async (id) => {
+  console.log("🧨 DB에서 삭제 시도 중:", id);
   await db.query("DELETE FROM schedules WHERE id = $1", [id]);
+  console.log("✅ DB 삭제 완료");
 };
 
 // 일정 수정
@@ -265,7 +268,7 @@ exports.generateMonthRecurringSchedules = async () => {
   };
 };
 
-exports.createAutoSchedule = async ({ user_id, time, place, source = "recommendation" }) => {
+exports.createAutoSchedule = async ({ user_id, time, place, source = "recommendation", color = null }) => {
   const fromQuery = await db.query(
     `SELECT address FROM schedules 
      WHERE user_id = $1 AND end_time < $2 

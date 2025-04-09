@@ -50,6 +50,7 @@ CREATE TABLE schedules (
   drive_duration INTEGER,
   source VARCHAR(20) DEFAULT 'manual',-- manual은 사용자가 직접 생성했다는 뜻. 추천 받는 경우에는 recommendation, 장소명 입력 시에는 search 등으로 구분.
   is_recurring BOOLEAN DEFAULT false,
+  color VARCHAR,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
