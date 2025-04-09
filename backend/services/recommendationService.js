@@ -4,8 +4,8 @@ const db = require("../lib/db");
 const { v4: uuidv4 } = require("uuid");
 const scheduleService = require("../services/scheduleService");
 
-const API_URL = "...";
-const API_KEY = "...";
+const API_URL = "https://api.perplexity.ai/chat/completions";
+const API_KEY = process.env.PERPLEXITY_API_KEY;
 
 function parseRecommendations(rawText) {
   try {
@@ -50,12 +50,11 @@ async function getPreviousSchedule(userId, timeISO) {
 
 exports.recommendPlace = async (userId, time) => {
   // 1. 사용자 키워드 가져오기
-  const preferenceData = await redis.get(`user:${userId}:preferences`);
-  const keywords = preferenceData ? JSON.parse(preferenceData).keywords : [];
+  const keywords = await redis.smembers(`user:${userId}:preferences`);
 
-  if (keywords.length === 0) {
-    throw new Error("No user keywords found");
-  }
+if (!keywords || keywords.length === 0) {
+  throw new Error("No user keywords found");
+}
 
   // 2. 직전 일정 가져오기
   const prev = await getPreviousSchedule(userId, time);
@@ -183,11 +182,40 @@ async function upsertPlace(place) {
 exports.saveRecommendation = async ({ user_id, place }) => {
   const placeId = await upsertPlace(place);
 
-  await db.query(`
-    INSERT INTO recommendations (user_id, place_id)
-    VALUES ($1, $2)
-    ON CONFLICT (user_id, place_id) DO NOTHING
+  // recommendation 이미 있는지 확인
+  const existing = await db.query(`
+    SELECT id FROM recommendations
+    WHERE user_id = $1 AND place_id = $2
   `, [user_id, placeId]);
 
-  return placeId;
+  if (existing.rows.length > 0) {
+    return {
+      recommendationId: existing.rows[0].id,
+      placeId
+    };
+  }
+
+  // 새로 저장
+  const result = await db.query(`
+    INSERT INTO recommendations (user_id, place_id)
+    VALUES ($1, $2)
+    RETURNING id
+  `, [user_id, placeId]);
+
+  return {
+    recommendationId: result.rows[0].id,
+    placeId
+  };
+};
+
+async function getPlaceIdFromRecommendation(recommendationId) {
+  const result = await db.query(
+    'SELECT place_id FROM recommendations WHERE id = $1',
+    [recommendationId]
+  );
+  return result.rows[0]?.place_id || null;
+}
+
+module.exports = {
+  getPlaceIdFromRecommendation
 };
