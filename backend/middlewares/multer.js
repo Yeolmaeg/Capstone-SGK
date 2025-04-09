@@ -1,0 +1,22 @@
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // 프로젝트 루트의 uploads 폴더
+  },
+  filename: (req, file, cb) => {
+    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, `${unique}-${file.originalname}`);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  const ext = path.extname(file.originalname);
+  if (ext !== ".jpg" && ext !== ".png" && ext !== ".jpeg") {
+    return cb(new Error("Only images are allowed"));
+  }
+  cb(null, true);
+};
+
+module.exports = multer({ storage, fileFilter });

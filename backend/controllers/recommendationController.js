@@ -44,7 +44,7 @@ exports.saveRecommendation = async (req, res) => {
       return res.status(400).json({ error: "user_id와 place 정보가 필요합니다." });
     }
 
-    const placeId = await service.saveRecommendation({ user_id, place });
+    const { recommendationId, placeId } = await service.saveRecommendation({ user_id, place });
 
     res.status(201).json({
       message: "추천 장소 저장 완료",
@@ -124,6 +124,7 @@ exports.createScheduleFromRecommendation = async (req, res) => {
       latitude: place.latitude,
       longitude: place.longitude,
       place_id,
+      recommendationId,
       start_time,
       end_time,
       move_type,
@@ -215,7 +216,9 @@ exports.autoCreateScheduleFromRecommendation = async (req, res) => {
     res.status(201).json({
       message: "추천 + 이동시간 + 일정 자동 생성 완료",
       schedule: saved.rows[0],
-      place
+      place,
+      recommendationId,
+      placeId
     });
 
   } catch (err) {
