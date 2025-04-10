@@ -13,11 +13,15 @@ exports.autoAddFromPlaceName = async (req, res) => {
   try {
     // 1. 장소 정보 받아오기
     const place = await getPlaceInfoFromPerplexity(place_name);
+// 2. 일정 자동 생성
+    const utcNow = new Date();
+    const kstNow = new Date(utcNow.getTime() + 9 * 60 * 60 * 1000);
+
 
     // 2. 일정 자동 생성
     const schedule = await createAutoSchedule({
       user_id,
-      time: new Date(),
+      time: kstNow,
       place,
       source: "from_place"
     });
