@@ -13,6 +13,7 @@ exports.autoAddFromPlaceName = async (req, res) => {
   try {
     // 1. 장소 정보 받아오기
     const place = await getPlaceInfoFromPerplexity(place_name);
+
 // 2. 일정 자동 생성
     const utcNow = new Date();
     const kstNow = new Date(utcNow.getTime() + 9 * 60 * 60 * 1000);
@@ -29,11 +30,11 @@ exports.autoAddFromPlaceName = async (req, res) => {
     // 3. 응답 반환 (result 아님!)
     res.status(201).json({
       message: "✅ 자동 일정 생성 완료",
-      schedule,
-      place
+      schedule
     });
   } catch (err) {
     console.error("❌ 자동 일정 생성 실패:", err.message);
     res.status(500).json({ error: "일정 생성 실패" });
   }
 };
+
