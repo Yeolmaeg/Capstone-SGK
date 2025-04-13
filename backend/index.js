@@ -8,6 +8,8 @@ const placeInfoRoutes = require("./routes/placeInfoRoutes");
 const addressRoutes = require("./routes/addressRoutes");
 const recommendationRoutes = require("./routes/recommendationRoutes");
 const autoScheduleRoutes = require("./routes/autoScheduleRoutes");
+// const uploadRoutes = require("./routes/uploadRoutes")
+// const timetableRoutes = require("./routes/timetableRoutes");
 const distanceRoutes = require("./routes/distanceRoutes");
 const dotenv = require("dotenv");
 const { generateNextMonthRecurringSchedules } = require("./services/scheduleService");
@@ -15,6 +17,8 @@ const preferenceRoutes = require('./routes/preferenceRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const classScheduleRoutes = require("./routes/classScheduleRoutes");
 
+// 미들웨어
+const authMiddleware = require('./middleware/authMiddleware');
 
 dotenv.config();
 const app = express();
@@ -29,6 +33,9 @@ app.use(cors({
 app.use(express.json());
 app.use("/user", userRoutes);
 app.use("/api/lecture-schedules", lectureScheduleRoutes);
+
+// app.use(authMiddleware); // 토큰 인증 미들웨어(userRoutes는 필요없음)
+
 app.use('/api', scheduleRoutes);
 app.use("/api", placeInfoRoutes);
 app.use("/api/recommendation", recommendationRoutes);
@@ -40,6 +47,10 @@ app.use('/api', feedbackRoutes);
 app.use("/api", classScheduleRoutes);
 app.use("/api", distanceRoutes);
 
+
+// app.use("/api", distanceRoutes);
+// app.use("/upload", uploadRoutes);
+// app.use("/api", timetableRoutes);
 
 // 서버 실행
 app.listen(PORT, () => {
