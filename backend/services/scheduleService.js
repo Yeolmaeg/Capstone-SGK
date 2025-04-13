@@ -55,8 +55,8 @@ exports.addSchedule = async ({
   transit_duration = null,
   drive_duration = null,
   is_recurring = false,
-  source = "manual",
-  color = null
+  color,
+  source = "manual"
 }) => {
   const result = await db.query(
     `INSERT INTO schedules (
@@ -311,24 +311,27 @@ exports.createAutoSchedule = async ({ user_id, time, place, source = "recommenda
       latitude, longitude, address,
       move_type, move_duration,
       walk_duration, transit_duration, drive_duration,
-      is_recurring, source
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,false,$14)
+      is_recurring, source, color, place_id
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
      RETURNING *`,
     [
       uuidv4(),
       user_id,
-      place.name,
+      place.title,
       start_time,
       end_time,
       place.latitude,
       place.longitude,
-      place.address,
+      place.location,
       shortestType,
       shortestDuration,
       durations.walk,
       durations.transit,
       durations.drive,
-      source
+      false,
+      source,
+      color,
+      place.id
     ]
   );
 
