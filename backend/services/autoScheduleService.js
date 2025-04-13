@@ -189,7 +189,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
       if (!place || !place.latitude || !place.longitude) {
         throw new Error("장소 정보가 유효하지 않습니다.");
       }
-  
+      const placeId = await placeService.savePlaceAndGetId(place);
       // 2. 일정 조회 + 빈 시간대 계산
       const schedules = await exports.getUserSchedulesWithinWeek(userId);
       const availableSlots = findAvailableTimeSlots(schedules);
@@ -243,7 +243,8 @@ for (const [type, time] of Object.entries(durationMap)) {
   transit_duration: durations.transit,
   drive_duration: durations.drive,
   source: "from_place",
-  color: "#EBE6B6"
+  color: "#EBE6B6",
+  place_id: placeId
       });
   
       return { message: "✅ 일정 자동 추가 완료",
