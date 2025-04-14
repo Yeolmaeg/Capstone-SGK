@@ -3,8 +3,11 @@ const service = require("../services/addressService");
 exports.addAddress = async (req, res) => {
   const { user_id, name, address, latitude, longitude } = req.body;
   try {
-    await service.addAddress({ user_id, name, address, latitude, longitude });
-    res.status(201).json({ message: "주소 추가 완료" });
+    const address_id = await service.addAddress({ user_id, name, address, latitude, longitude });
+    res.status(201).json({ 
+      message: "주소 추가 완료",
+      address_id
+    });
   } catch (err) {
     res.status(500).json({ error: "주소 추가 실패" });
   }
