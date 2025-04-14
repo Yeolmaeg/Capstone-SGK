@@ -1,7 +1,7 @@
 const db = require("../lib/db");
 const { v4: uuidv4 } = require("uuid");
 
-exports.createUser = async ({ email, name, school, school_id }) => {
+/*exports.createUser = async ({ email, name, school, school_id }) => {
   const id = uuidv4();
   await db.query(
     `INSERT INTO users (id, email, name, school, school_id)
@@ -10,6 +10,7 @@ exports.createUser = async ({ email, name, school, school_id }) => {
   );
   return id;
 };
+*/
 
 exports.getUser = async (id) => {
   const result = await db.query(
