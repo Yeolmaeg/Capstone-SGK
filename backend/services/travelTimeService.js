@@ -3,16 +3,30 @@ const haversine = require("haversine-distance");
 const { parseDuration } = require("../utils/parseDuration"); // 유틸에서 분 단위 변환 함수 가져오기
 
 const GOOGLE_MAPS_API_KEY = (process.env.GOOGLE_MAPS_API_KEY || "").trim();
-const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || "").trim();
+const OPENAI_API_KEY = "...";
+ 
+
 
 // 📍 주소 → 좌표 변환
 const getCoordinates = async (address) => {
+  console.log("📍 Google Maps 지오코딩 요청:", address);
   const response = await axios.get("https://maps.googleapis.com/maps/api/geocode/json", {
-    params: { address, key: GOOGLE_MAPS_API_KEY },
+    params: { address, key: process.env.GOOGLE_MAPS_API_KEY },
   });
+
+
+  console.log("📡 Google 응답 상태:", response.status);
+
   const location = response.data.results[0]?.geometry?.location;
-  if (!location) throw new Error("주소를 좌표로 변환할 수 없습니다.");
-  return location;
+  if (!location) {
+    console.error("❌ 주소 → 좌표 변환 실패 (결과 없음)");
+    throw new Error("주소를 좌표로 변환할 수 없습니다.");
+  }
+
+  return {
+    latitude: location.lat,
+    longitude: location.lng
+  };
 };
 
 // 🚶 도보 & 🚗 자차 → Google Directions API
@@ -40,6 +54,8 @@ const getFallbackTimeWithGPT = async (from, to, mode) => {
 ${mode === "walking" ? "도보" : "자차"}로 이동했을 때의 평균 예상 소요 시간을 분 단위로 알려줘.
 단순 수치는 괜찮지만 최대한 현실적인 답을 줘. 결과는 숫자만 분 단위로 줘.
   `.trim();
+  
+  console.log("🔐 현재 GPT 키:", OPENAI_API_KEY);
 
   const response = await axios.post(
     "https://api.openai.com/v1/chat/completions",
