@@ -1,12 +1,15 @@
 const db = require("../lib/db");
 const axios = require("axios");
+const { v4: uuidv4 } = require("uuid");
 
 exports.addAddress = async ({ user_id, name, address, latitude, longitude }) => {
+  const id = uuidv4();
   await db.query(
-    `INSERT INTO user_address (user_id, name, address, latitude, longitude)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [user_id, name, address, latitude, longitude]
+    `INSERT INTO user_address (id, user_id, name, address, latitude, longitude)
+     VALUES ($1, $2, $3, $4, $5, $6)`,
+    [id, user_id, name, address, latitude, longitude]
   );
+  return id;
 };
 
 exports.getAddresses = async (user_id) => {
