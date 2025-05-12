@@ -133,10 +133,11 @@ exports.createScheduleFromRecommendation = async (req, res) => {
       transit_duration,
       drive_duration,
       source: "recommendation",
-      is_recurring: false
+      is_recurring: false,
+      color: "#d1ebb6"
     });
 
-    res.status(201).json({ message: "추천 일정 추가 완료" });
+    res.status(201).json({ message: "추천 일정 추가 완료", schedule  });
   } catch (err) {
     console.error("❌ 추천 일정 생성 에러:", err);
     res.status(500).json({ error: "추천 일정 생성 실패" });
@@ -202,7 +203,8 @@ exports.autoCreateScheduleFromRecommendation = async (req, res) => {
       transit_duration: durations.transit,
       drive_duration: durations.drive,
       source: "recommendation",
-      is_recurring: false
+      is_recurring: false,
+      color: "#d1ebb6" 
     });
 
     const saved = await db.query(

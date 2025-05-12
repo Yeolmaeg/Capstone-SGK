@@ -95,6 +95,8 @@ exports.addSchedule = async (req, res) => {
     color
   } = req.body;
 
+  const finalColor = color || "#d1ebb6";  
+
   console.log("➕ 일정 추가 요청:", req.body);
   const id = uuidv4(); 
   const finalTitle = title || generateDefaultTitle(latitude, longitude);
@@ -114,7 +116,7 @@ exports.addSchedule = async (req, res) => {
         latitude, longitude, address, place_id,
         move_type, move_duration,
         walk_duration, transit_duration, drive_duration,
-        is_recurring, source, color
+        is_recurring, source, finalColor
       ]
     );
 

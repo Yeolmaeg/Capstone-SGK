@@ -202,7 +202,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
       const start_time = closestSlot.start_time;
       const end_time = new Date(new Date(start_time).getTime() + 60 * 60 * 1000).toISOString(); // 1시간짜리 일정
       
-      const from = closestSlot.between?.prev?.address || "서울 서대문문구"; 
+      const from = closestSlot.between?.prev?.address || "서울 서대문구"; 
       // 5. 이동시간 계산
 const durations = await getDurations({
   user_id: userId,
@@ -251,7 +251,7 @@ for (const [type, time] of Object.entries(durationMap)) {
         place: place,
         start_time,
         move_type: shortestType,
-        move_duration: shortestDuration 
+        move_duration: shortestDuration
       };
     } catch (err) {
       console.error("❌ 자동 일정 생성 실패:", err.message);
