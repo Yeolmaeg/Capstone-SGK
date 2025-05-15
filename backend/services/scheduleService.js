@@ -6,6 +6,7 @@ const haversine = require("haversine-distance");
 const { getGeocode } = require("../services/geocodeService");
 
 
+
 // 일정 전체 조회
 exports.getSchedules = async (user_id) => {
   const result = await db.query(
@@ -25,6 +26,7 @@ exports.getScheduleById = async (id) => {
 };
 
 // 일주일 기준 일정 조회
+
 exports.getUserSchedulesWithinWeek = async (user_id) => {
   const result = await db.query(
     `SELECT * FROM schedules 
@@ -32,6 +34,7 @@ exports.getUserSchedulesWithinWeek = async (user_id) => {
      ORDER BY start_time ASC`,
     [user_id]
   );
+
   return result.rows;
 };
 
@@ -327,6 +330,7 @@ console.log("🧾 불러온 일정 리스트:", schedules.map(s => ({
   };
 
   // 4. 가장 짧은 이동수단 선택
+
   let shortestType = "walking";
   let shortestDuration = durations.walk;
   for (const [type, dur] of Object.entries(durationMap)) {
@@ -348,6 +352,7 @@ console.log("🧾 불러온 일정 리스트:", schedules.map(s => ({
   const { start_time, end_time } = timeSlot;
 
   // 6. 일정 생성
+
   const insertResult = await db.query(
     `INSERT INTO schedules (
       id, user_id, title, start_time, end_time,

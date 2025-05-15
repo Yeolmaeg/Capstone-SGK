@@ -15,13 +15,14 @@ exports.autoAddFromPlaceName = async (req, res) => {
     const place = await getPlaceInfoFromPerplexity(place_name);
 
     // 2. 일정 자동 생성
+
     const schedule = await createAutoSchedule({
       user_id,
       place,
       source: "from_place",
       color: "#d1ebb6"
     });
-    
+
     // 3. 응답 반환 (result 아님!)
     res.status(201).json({
       message: "✅ 자동 일정 생성 완료",

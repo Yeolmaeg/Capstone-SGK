@@ -1,5 +1,5 @@
 const axios = require("axios");
-const apiKey = "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";
+const apiKey = process.env.PERPLEXITY_API_KEY;
 
 exports.getPlaceInfoFromPerplexity = async (placeName) => {
   console.log("🚀 Perplexity API 호출 준비 중");

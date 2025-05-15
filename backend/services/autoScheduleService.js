@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const { getPlaceInfoFromPerplexity } = require("./placeInfoService");
 const { getDurations } = require("./travelTimeService");
 
+
 exports.getUserSchedulesWithinWeek = async (user_id) => {
   const now = new Date();
   const oneWeekLater = new Date();
