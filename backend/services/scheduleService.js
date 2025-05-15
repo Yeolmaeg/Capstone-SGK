@@ -1,6 +1,10 @@
 const db = require("../lib/db");
 const { v4: uuidv4 } = require("uuid");
 const { getDurations } = require("../services/travelTimeService");
+const { findNearestSchedule } = require("../utils/distance"); 
+const haversine = require("haversine-distance");
+const { getGeocode } = require("../services/geocodeService");
+
 
 
 // 일정 전체 조회
@@ -22,16 +26,13 @@ exports.getScheduleById = async (id) => {
 };
 
 // 일주일 기준 일정 조회
-exports.getUserSchedulesWithinWeek = async (user_id, fromDate = new Date()) => {
-  const toDate = new Date(fromDate);
-  toDate.setDate(toDate.getDate() + 7);
 
+exports.getUserSchedulesWithinWeek = async (user_id) => {
   const result = await db.query(
     `SELECT * FROM schedules 
      WHERE user_id = $1 
-     AND start_time >= $2 AND start_time <= $3
      ORDER BY start_time ASC`,
-    [user_id, fromDate, toDate]
+    [user_id]
   );
 
   return result.rows;
@@ -187,6 +188,20 @@ exports.generateRecurringForSchedule = async (schedule) => {
   }
 };
 
+// 거리 계산
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const toRad = (value) => (value * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 // 한 달 반복 일정 복사 (4주간 생성)
 exports.generateMonthRecurringSchedules = async () => {
@@ -268,19 +283,40 @@ exports.generateMonthRecurringSchedules = async () => {
   };
 };
 
-exports.createAutoSchedule = async ({ user_id, time, place, source = "recommendation", color = null }) => {
-  const fromQuery = await db.query(
-    `SELECT address FROM schedules 
-     WHERE user_id = $1 AND end_time < $2 
-     ORDER BY end_time DESC 
-     LIMIT 1`,
-    [user_id, time]
-  );
+exports.createAutoSchedule = async ({ user_id, place, source = "recommendation", color}) => {
+   // 1. 좌표가 없으면 geocode로 보완
+   console.log("🧠 일정 로딩 시작");
 
-  const from = fromQuery.rows[0]?.address || "서울 성동구";
+  if (!place.latitude || !place.longitude) {
+    console.warn("📍 Perplexity 좌표 누락 → Google Geocoding으로 보완 시도");
+    const coords = await getGeocode(place.location);
+    place.latitude = coords.latitude;
+    place.longitude = coords.longitude;
+  }
 
+  // 2. 사용자 일정 가져오기
+  console.trace("🧭 getUserSchedulesWithinWeek() 호출 위치 추적");
+  const schedules = await exports.getUserSchedulesWithinWeek(user_id);
+  let fromSchedule = null;
+  let fromAddress = "서울 성동구"; // 기본값
+
+  if (schedules.length > 0) {
+    fromSchedule = findNearestSchedule(schedules, place);
+    if (fromSchedule?.address) {
+      fromAddress = fromSchedule.address;
+    }
+  }
+  console.log("📆 불러온 일정 수:", schedules.length);
+console.log("🧾 불러온 일정 리스트:", schedules.map(s => ({
+  title: s.title,
+  start: s.start_time,
+  lat: s.latitude,
+})));
+
+
+  // 3. 이동시간 계산
   const durations = await getDurations({
-    from,
+    from: fromAddress,
     target: {
       latitude: place.latitude,
       longitude: place.longitude,
@@ -293,6 +329,8 @@ exports.createAutoSchedule = async ({ user_id, time, place, source = "recommenda
     transit: durations.transit
   };
 
+  // 4. 가장 짧은 이동수단 선택
+
   let shortestType = "walking";
   let shortestDuration = durations.walk;
   for (const [type, dur] of Object.entries(durationMap)) {
@@ -302,8 +340,18 @@ exports.createAutoSchedule = async ({ user_id, time, place, source = "recommenda
     }
   }
 
-  const start_time = new Date(time);
-  const end_time = new Date(start_time.getTime() + 60 * 60 * 1000);
+  // 5. 빈 시간대 탐색 (이동시간 포함)
+  const durationMinutes = 60;
+  const timeSlot = findAvailableSlot(schedules, shortestDuration, durationMinutes, place.latitude, place.longitude);
+
+
+  if (!timeSlot) {
+    throw new Error("⚠️ 적절한 빈 시간대를 찾을 수 없습니다.");
+  }
+
+  const { start_time, end_time } = timeSlot;
+
+  // 6. 일정 생성
 
   const insertResult = await db.query(
     `INSERT INTO schedules (
@@ -337,3 +385,36 @@ exports.createAutoSchedule = async ({ user_id, time, place, source = "recommenda
 
   return insertResult.rows[0]; 
 };
+
+function findAvailableSlot(schedules, moveMinutes, durationMinutes, targetLat, targetLon) {
+  const totalMinutes = moveMinutes + durationMinutes;
+  const sorted = [...schedules].sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+  const slots = [];
+
+  for (let i = 0; i < sorted.length - 1; i++) {
+    const prevEnd = new Date(sorted[i].end_time);
+    const nextStart = new Date(sorted[i + 1].start_time);
+    const gap = (nextStart - prevEnd) / (1000 * 60);
+
+    if (gap >= totalMinutes) {
+      const slotStart = new Date(prevEnd.getTime() + moveMinutes * 60 * 1000);
+      const slotEnd = new Date(slotStart.getTime() + durationMinutes * 60 * 1000);
+      const dist = calculateDistance(sorted[i].latitude, sorted[i].longitude, targetLat, targetLon);
+      slots.push({ start_time: slotStart, end_time: slotEnd, distance: dist });
+    }
+  }
+
+  // 마지막 일정 이후의 빈 시간 고려
+  if (sorted.length > 0) {
+    const last = sorted[sorted.length - 1];
+    const lastEnd = new Date(last.end_time);
+    const slotStart = new Date(lastEnd.getTime() + moveMinutes * 60 * 1000);
+    const slotEnd = new Date(slotStart.getTime() + durationMinutes * 60 * 1000);
+    const dist = calculateDistance(last.latitude, last.longitude, targetLat, targetLon);
+    slots.push({ start_time: slotStart, end_time: slotEnd, distance: dist });
+  }
+
+  // 거리 기준 정렬
+  slots.sort((a, b) => a.distance - b.distance);
+  return slots[0] || null;
+}
