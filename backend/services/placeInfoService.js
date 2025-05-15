@@ -1,5 +1,5 @@
 const axios = require("axios");
-const apiKey = process.env.PERPLEXITY_API_KEY;
+const apiKey = "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";
 
 exports.getPlaceInfoFromPerplexity = async (placeName) => {
   console.log("🚀 Perplexity API 호출 준비 중");
@@ -13,7 +13,8 @@ exports.getPlaceInfoFromPerplexity = async (placeName) => {
   "latitude": 위도,
   "longitude": 경도,
   "hours": "운영시간"
-}`;
+}
+좌표 정보를 반드시 넣어서 줘야 해. 비워두면 안돼`;
 try{
   const response = await axios.post('https://api.perplexity.ai/chat/completions', {
       model: 'sonar-pro',

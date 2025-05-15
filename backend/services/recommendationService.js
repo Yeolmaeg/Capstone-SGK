@@ -4,7 +4,7 @@ const db = require("../lib/db");
 const { v4: uuidv4 } = require("uuid");
 
 const API_URL = "https://api.perplexity.ai/chat/completions";
-const API_KEY = process.env.PERPLEXITY_API_KEY;
+const API_KEY = "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";
 
 // 🔧 JSON 파싱 유틸
 function parseRecommendations(rawText) {
