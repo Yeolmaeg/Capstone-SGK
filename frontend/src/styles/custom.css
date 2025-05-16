@@ -17,6 +17,16 @@
     border: none !important;
     box-shadow: none !important;
   }
+
+  /* 이벤트 슬롯에서 시간 숨기기*/
+  .rbc-event-label {
+    display: none !important;
+  }
+
+  /* 이벤트 슬롯에서 상세 주소 숨기기 */
+.rbc-event-content span {
+    display: none !important;
+}
   
   .popup-button {
     padding: 4px 10px;
@@ -83,7 +93,10 @@
   background-color: transparent !important;
 }
 
-
+/* 타임라인뷰에서 날짜 오른쪽 마진 제거 */
+.rbc-time-header.rbc-overflowing {
+  margin-right: 0 !important;
+}
 
 
   
