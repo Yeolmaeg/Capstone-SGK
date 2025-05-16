@@ -6,6 +6,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import CalendarTopBar from "../components/CalendarTopBar";
 import { useSwipeable } from "react-swipeable";
 import "../styles/custom.css";
+import { getSchedules } from "../api/schedule";
 
 moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
@@ -19,17 +20,31 @@ const CalendarViewScreen = () => {
   const selectedYear = currentDate.getFullYear();
   const selectedMonth = currentDate.getMonth() + 1;
 
+// ✅ DB에서 일정 불러오기
   useEffect(() => {
-    const stored = localStorage.getItem("savedEvents");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      const restored = parsed.map((event) => ({
-        ...event,
-        start: new Date(event.start),
-        end: new Date(event.end),
-      }));
-      setEvents(restored);
-    }
+    const fetchSchedules = async () => {
+      try {
+        const user_id = "5012f198-ca58-42ca-afde-41e1459a4cef";
+        const data = await getSchedules(user_id);
+
+        // ✅ 일정 형식 변환
+        const formatted = data.map((e) => ({
+          id: e.id,
+          title: e.title || "제목 없음",
+          start: new Date(e.start_time),
+          end: new Date(e.end_time),
+          address: e.address || "주소 없음",
+          color: e.color || "#3174ad",
+        }));
+
+        console.log("📅 불러온 일정:", formatted);
+        setEvents(formatted);
+      } catch (err) {
+        console.error("❌ 일정 불러오기 실패:", err);
+      }
+    };
+
+    fetchSchedules();
   }, []);
 
   const handleMonthChange = (newDate) => {
@@ -124,12 +139,9 @@ const styles = {
   container: {
     width: "100vw",
     height: "100vh",
-    margin: "0 auto",
     display: "flex",
     flexDirection: "column",
     backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
     overflow: "hidden",
     position: "relative",
   },
@@ -137,6 +149,7 @@ const styles = {
     flexGrow: 1,
     height: "calc(100% - 50px)",
     paddingTop: "50px",
+    position: "relative",
   },
 };
 

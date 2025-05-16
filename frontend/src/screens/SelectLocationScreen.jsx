@@ -23,7 +23,9 @@ const handleDone = async () => {
         selectedPlace: result.location, // UI 입력값
         latitude: result.latitude,
         longitude: result.longitude,
-        selectedTitle: location.state?.selectedTitle,
+        selectedTitle: location.state?.selectedTitle
+        ? `${location.state.selectedTitle} ${inputName.trim()}`
+      : inputName.trim(),
         selectedColor: location.state?.selectedColor,
         selectedStartTime: location.state?.selectedStartTime,
         selectedEndTime: location.state?.selectedEndTime,

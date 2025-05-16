@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TopBar from "../components/CancelTopBar";
+import DoneTopBar from "../components/DoneTopBar";
 import BottomBar from "../components/BottomBar";
 
 const MyPageEditScreen = () => {
   const navigate = useNavigate();
+
+  const handleDone = () => {
+    navigate("/mypage");
+  };
 
   const [nickname, setNickname] = useState("닉네임");
   const [id, setId] = useState("ewhain");
@@ -13,7 +17,7 @@ const MyPageEditScreen = () => {
 
   return (
     <div style={styles.container}>
-      <TopBar title="Dayfull" buttonLabel="완료" onButtonClick={() => navigate("/mypage")} />
+      <DoneTopBar onDone={handleDone} />
       <div style={styles.content}>
         <div style={styles.profileSection}>
           <div style={styles.profileImage} />
@@ -56,7 +60,6 @@ const styles = {
   container: {
     width: "100vw",
     height: "100vh",
-    margin: "0 auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -106,6 +109,7 @@ const styles = {
     backgroundColor: "transparent",
     fontSize: "16px",
     outline: "none",
+    marginLeft: "15px",
   },
   clearButton: {
     background: "none",

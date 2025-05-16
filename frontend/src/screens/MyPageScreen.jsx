@@ -1,15 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import TopBar from "../components/CancelTopBar";
+import EditTopBar from "../components/EditTopBar";
 import BottomBar from "../components/BottomBar";
 
 const MyPageScreen = () => {
   const navigate = useNavigate();
 
+  const handleDone = () => {
+    navigate("/editmypage");
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.topBarContainer}>
-        <TopBar title="Dayfull" buttonLabel="편집" onButtonClick={() => navigate("/mypage-edit")} />
+        <EditTopBar onEdit={handleDone} />
       </div>
       <div style={styles.content}>
         <div style={styles.profileSection}>
@@ -43,11 +47,6 @@ const MyPageScreen = () => {
             <span style={styles.menuText}>주소록</span>
             <span style={styles.menuArrow}>➝</span>
           </div>
-          <div style={styles.divider} />
-          <div style={styles.menuItem} onClick={() => navigate("/events")}>
-            <span style={styles.menuText}>이벤트 모아보기</span>
-            <span style={styles.menuArrow}>➝</span>
-          </div>
         </div>
       </div>
     </div>
@@ -58,7 +57,7 @@ const styles = {
   container: {
     width: "100vw",
     height: "100vh",
-    margin: "0 auto",
+
     display: "flex",
     flexDirection: "column",
     alignItems: "center",

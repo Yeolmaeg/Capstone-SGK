@@ -45,9 +45,9 @@ const RecommendationScreen = () => {
   const [endTime, setEndTime] = useState(selectedSlot?.end || new Date(Date.now() + 3600000));
 
   const minTime = new Date();
-  minTime.setHours(6, 0);
+  minTime.setHours(0, 0);
   const maxTime = new Date();
-  maxTime.setHours(23, 0);
+  maxTime.setHours(23, 59);
 
   const estimatedStart = selectedSlot?.start ? new Date(selectedSlot.start) : null;
   const estimatedEnd = estimatedStart ? new Date(estimatedStart.getTime() + 4 * 60000) : null;
@@ -103,7 +103,7 @@ const RecommendationScreen = () => {
               영업시간: 월~토 11:00~23:00 / 일 13:00~23:00
             </div>
             <div style={{ ...styles.buttonRow, justifyContent: "center" }}>
-              <button style={styles.tagButton}>도보</button>
+              <button style={styles.selectedtagButton}>도보</button>
               <button style={styles.tagButton}>대중교통</button>
               <button style={styles.tagButton}>자차</button>
             </div>
@@ -253,6 +253,12 @@ const styles = {
     padding: "6px 12px",
     backgroundColor: "transparent",
     border: "1px solid #ccc",
+    fontSize: "14px",
+  },
+  selectedtagButton: {
+    padding: "6px 12px",
+    backgroundColor: "transparent",
+    border: "2px solid #000",
     fontSize: "14px",
   },
   buttonRow: {

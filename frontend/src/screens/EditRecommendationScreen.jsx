@@ -85,9 +85,9 @@ const EditRecommendationScreen = () => {
   };
 
   const minTime = new Date();
-  minTime.setHours(6, 0);
+  minTime.setHours(0, 0);
   const maxTime = new Date();
-  maxTime.setHours(23, 0);
+  maxTime.setHours(23, 59);
 
   if (!originalEvent) return null;
 

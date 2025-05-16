@@ -13,6 +13,7 @@ import Event from "../components/Event";
 import { getSchedules } from "../api/schedule"; 
 
 
+
 const localizer = momentLocalizer(moment);
 
 const CustomThreeDayView = (props) => {
@@ -64,6 +65,7 @@ const TimelineViewScreen = () => {
   const [buttonPosition, setButtonPosition] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [events, setEvents] = useState([]);
+   
 
   const calendarRef = useRef(null);
   const navigate = useNavigate();
@@ -313,7 +315,6 @@ const styles = {
     flexGrow: 1,
     height: "calc(100% - 50px)",
     paddingTop: "50px",
-    paddingBottom: "50px",
     position: "relative",
   },
 };

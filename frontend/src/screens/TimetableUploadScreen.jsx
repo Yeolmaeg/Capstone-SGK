@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { uploadTimetableImage } from "../api/uploadTimetableImage"; // API 함수 임포트
 
 const semesters = [
   "2025년 1학기",
@@ -13,12 +14,36 @@ const TimetableUploadScreen = () => {
   const navigate = useNavigate();
   const [selectedSemester, setSelectedSemester] = useState(semesters[0]);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [detectedLectures, setDetectedLectures] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleFileUpload = (event) => {
+  const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
       setUploadedFile(URL.createObjectURL(file));
+
+      try {
+        setIsUploading(true);
+        const lectures = await uploadTimetableImage(file);
+        console.log("OCR 결과:", lectures);
+        setDetectedLectures(lectures);
+      } catch (error) {
+        console.error("OCR 처리 실패:", error);
+        alert("OCR 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+      } finally {
+        setIsUploading(false);
+      }
     }
+  };
+
+   const handleConfirm = () => {
+    // 학기와 OCR 결과를 다음 화면으로 전달
+    navigate("/dateselection", {
+      state: {
+        semester: selectedSemester,
+        lectures: detectedLectures,
+      },
+    });
   };
 
   return (
@@ -60,8 +85,12 @@ const TimetableUploadScreen = () => {
       </div>
 
       {/* 확인 버튼 */}
-      <button style={styles.button} onClick={() => navigate("/dateselection")}>
-        확인
+      <button
+        style={styles.button}
+        onClick={handleConfirm}
+        disabled={isUploading || detectedLectures.length === 0}
+      >
+        {isUploading ? "처리 중..." : "확인"}
       </button>
     </div>
   );
@@ -99,16 +128,19 @@ const styles = {
     borderRadius: "00px",
     cursor: "pointer",
     marginBottom: "40px",
+    overflow: "hidden",
   },
   plusIcon: {
     fontSize: "60px",
     color: "#666",
   },
   uploadedImage: {
-    width: "100%",
+    width: "auto",
     height: "100%",
-    objectFit: "cover",
-    borderRadius: "0px",
+    maxWidth: "240px",
+    maxHeight: "240px",
+    objectFit: "contain", // 비율 유지
+    borderRadius: "10px",
   },
   semesterList: {
     display: "flex",

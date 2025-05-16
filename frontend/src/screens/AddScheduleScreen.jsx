@@ -61,9 +61,9 @@ const AddScheduleScreen = () => {
 
 
   const minTime = new Date();
-  minTime.setHours(6, 0);
+  minTime.setHours(0, 0);
   const maxTime = new Date();
-  maxTime.setHours(23, 0);
+  maxTime.setHours(23, 59);
 
   useEffect(() => {
     if (location.state?.selectedPlace) setPlace(location.state.selectedPlace);
@@ -77,7 +77,12 @@ const AddScheduleScreen = () => {
   }, [location.state]);
 
   const handleDone = async () => {
+    if (endTime <= startTime) {
+    alert("종료 시간이 시작 시간보다 빠를 수 없습니다.");
+    return;
+  }
     console.log("✅ handleDone() 호출됨");
+
     try {
       const scheduleData = {
         user_id: "5012f198-ca58-42ca-afde-41e1459a4cef",
