@@ -98,7 +98,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "0 10px",
+    padding: "0 6px",
     backgroundColor: "#fff",
     borderBottom: "1px solid #ddd",
     position: "absolute",

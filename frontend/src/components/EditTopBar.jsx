@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom"; // useNavigate 훅 임포트
 
-const CancelTopBar = () => {
+const EditTopBar = ({ onEdit }) => {
   const navigate = useNavigate(); // navigate 함수 초기화
 
   return (
@@ -10,14 +10,14 @@ const CancelTopBar = () => {
       <span style={styles.logo} onClick={() => navigate("/timelineview")}>
         Dayfull
       </span>
-      <button style={styles.cancelBtn} onClick={() => navigate(-1)}>
-        취소
+      <button style={styles.editBtn} onClick={onEdit}>
+        편집
       </button>
     </div>
   );
 };
 
-CancelTopBar.propTypes = {
+EditTopBar.propTypes = {
   selectedYear: PropTypes.number.isRequired,
   selectedMonth: PropTypes.number.isRequired,
   onMonthChange: PropTypes.func.isRequired,
@@ -44,7 +44,7 @@ const styles = {
     cursor: "pointer",
     marginLeft: "10px",
   },
-  cancelBtn: {
+  editBtn: {
     background: "none",
     border: "none",
     fontSize: "16px",
@@ -55,4 +55,4 @@ const styles = {
   },
 };
 
-export default CancelTopBar;
+export default EditTopBar;
