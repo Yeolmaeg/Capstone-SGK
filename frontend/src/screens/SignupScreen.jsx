@@ -21,7 +21,7 @@ const SignupScreen = () => {
     // 추가 회원가입 로직 (API 호출 등) 넣기
 
     // 성공 시 페이지 이동 예시
-    navigate("/login");
+    navigate("/");
   };
 
   return (
