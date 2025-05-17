@@ -98,7 +98,7 @@ const styles = {
     alignItems: "center",
     width: "100%",
     marginTop: "15px",
-    marginBottom: "190px",  // 개강일과 종강일 사이의 여백 추가
+    marginBottom: "30%",  // 개강일과 종강일 사이의 여백 추가
   },
   datePickerWrapper: {
     display: "flex",
@@ -140,7 +140,7 @@ const styles = {
     cursor: "pointer",
     fontSize: "16px",
     fontWeight: "bold",
-    marginBottom: "100px",
+    marginBottom: "20vh",
   },
   separator: {
     width: "80%",
