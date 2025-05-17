@@ -8,7 +8,14 @@ export const autoCreateRecommendedSchedule = async (userId, timeISO) => {
     user_id: userId,
     time: timeISO,
   });
-  return response.data; // { schedule, place, recommendationId, placeId }
+
+   const data = response.data;
+  return {
+    place: data.place || null,
+    schedule: data.schedule || null,
+    recommendationId: data.recommendationId || null,
+    placeId: data.placeId || null,
+  };
 };
 
 // 2. 추천 피드백 저장 (4-5)

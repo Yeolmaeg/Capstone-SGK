@@ -6,21 +6,45 @@ const { v4: uuidv4 } = require("uuid");
 const API_URL = "https://api.perplexity.ai/chat/completions";
 const API_KEY = process.env.PERPLEXITY_API_KEY;
 
+function extractJsonArray(text) {
+  const firstBracket = text.indexOf("[");
+  if (firstBracket === -1) return null;
+
+  let stack = 0;
+  for (let i = firstBracket; i < text.length; i++) {
+    if (text[i] === "[") stack++;
+    else if (text[i] === "]") stack--;
+
+    if (stack === 0) {
+      return text.slice(firstBracket, i + 1);
+    }
+  }
+  return null;
+}
 
 // 🔧 JSON 파싱 유틸
 function parseRecommendations(rawText) {
+   console.log("Perplexity rawText 응답:", rawText);  // 여기에 로그 추가
+  
+   // 1. Markdown 코드블럭 제거
+  rawText = rawText.replace(/```json/g, "").replace(/```/g, "");
+
   try {
-    const startIdx = rawText.indexOf("[");
-    const endIdx = rawText.lastIndexOf("]");
-    if (startIdx === -1 || endIdx === -1) {
-      console.error("❌ JSON 배열 형식이 아님");
+    // 2. 정확한 JSON 배열 추출
+    const jsonOnly = extractJsonArray(rawText);
+    if (!jsonOnly) {
+      console.error("❌ JSON 배열 추출 실패");
       return [];
     }
 
-    const jsonOnly = rawText.slice(startIdx, endIdx + 1).trim();
-    const arr = JSON.parse(jsonOnly);
+    console.log("🔍 JSON 부분 추출:", jsonOnly);
 
-    return arr.map(item => ({
+    // 3. JSON 파싱
+    const arr = JSON.parse(jsonOnly);
+    console.log(`✅ JSON 파싱 성공: ${arr.length}개 아이템`);
+
+    // 4. 키 변환
+    const mapped = arr.map(item => ({
       name: item["장소 이름"],
       address: item["위치"],
       description: item["설명"],
@@ -30,6 +54,8 @@ function parseRecommendations(rawText) {
       longitude: item["경도"],
       hours: item["영업 시간"] || null
     }));
+
+    return mapped;
   } catch (e) {
     console.error("❌ JSON 파싱 실패:", e);
     return [];
@@ -97,6 +123,8 @@ exports.recommendPlace = async (userId, time) => {
 
   const text = response.data.choices?.[0]?.message?.content || "";
   const parsedPlaces = parseRecommendations(text);
+
+  console.log("▶ parseRecommendations 반환값:", parsedPlaces);
 
   const results = [];
   for (const place of parsedPlaces) {

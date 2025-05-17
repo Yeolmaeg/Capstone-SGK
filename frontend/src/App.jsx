@@ -1,12 +1,16 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginScreen from "./screens/LoginScreen";
+import SignupScreen from "./screens/SignupScreen";
 import UnivSelectScreen from "./screens/UnivSelectScreen";
 import TimetableUploadScreen from "./screens/TimetableUploadScreen";
 import DateSelectionScreen from "./screens/DateSelectionScreen"; 
 import ScanningScreen from "./screens/ScanningScreen";
 import ScannedScreen from "./screens/ScannedScreen";
 import MyPageScreen from "./screens/MyPageScreen";
+import AddressListScreen from "./screens/AddressListScreen";
+import EditAddressScreen from "./screens/EditAddressScreen";
+import AddAddressScreen from "./screens/AddAddressScreen";
 import MyPageEditScreen from "./screens/MyPageEditScreen";
 import CalendarViewScreen from "./screens/CalendarViewScreen";
 import TimelineViewScreen from "./screens/TimelineViewScreen";
@@ -23,12 +27,16 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" element={<LoginScreen />} />
+          <Route path="/signup" element={<SignupScreen />} />
           <Route path="/univ-select" element={<UnivSelectScreen />} />
           <Route path="/timetable-upload" element={<TimetableUploadScreen />} />
           <Route path="/dateselection" element={<DateSelectionScreen />} />
           <Route path="/scanning" element={<ScanningScreen />} />
           <Route path="/scanned" element={<ScannedScreen />} />
           <Route path="/mypage" element={<MyPageScreen />} />
+          <Route path="/addresslist" element={<AddressListScreen/>}/>
+          <Route path="/editaddress" element={<EditAddressScreen/>}/>
+          <Route path="/addaddress" element={<AddAddressScreen/>}/>
           <Route path="/editmypage" element={<MyPageEditScreen />} />
           <Route path="/calendarview" element={<CalendarViewScreen />} />
           <Route path="/timelineview" element={<TimelineViewScreen />} />

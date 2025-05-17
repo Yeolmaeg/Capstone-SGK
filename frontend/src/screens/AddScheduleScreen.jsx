@@ -1,7 +1,6 @@
 // AddScheduleScreen.jsx
-import React, { useState, forwardRef } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
 import PropTypes from "prop-types";
 import { FiMapPin, FiClock } from "react-icons/fi";
 import CancelTopBar from "../components/CancelTopBar";
@@ -50,63 +49,97 @@ const AddScheduleScreen = () => {
   const navigate = useNavigate();
   const slot = location.state?.selectedSlot;
 
-  const [selectedColor, setSelectedColor] = useState("#ebe6b6");
+  // 선택된 날짜 (YYYY-MM-DD 등 순수 날짜용)
   const [selectedDate, setSelectedDate] = useState(slot?.start || new Date());
-  const [startTime, setStartTime] = useState(slot?.start || new Date());
-  const [endTime, setEndTime] = useState(slot?.end || new Date(Date.now() + 3600000));
+
+  // 선택된 시간: 시작, 종료 (시간만 사용)
+  // 초기값은 slot?.start, slot?.end 의 시간부분만 추출해서 날짜는 오늘로 초기화
+  const extractTimeOnly = (date) => {
+    if (!date) return null;
+    const d = new Date(date);
+    return new Date(1970, 0, 1, d.getHours(), d.getMinutes());
+  };
+
+  const [startTime, setStartTime] = useState(extractTimeOnly(slot?.start) || new Date(1970, 0, 1, 9, 0));
+  const [endTime, setEndTime] = useState(extractTimeOnly(slot?.end) || new Date(1970, 0, 1, 10, 0));
+
   const [title, setTitle] = useState("");
   const [place, setPlace] = useState("");
   const [latitude, setLatitude] = useState(null);
-  const [longtitude, setLongitude] = useState(null);
-
+  const [longitude, setLongitude] = useState(null);
+  const [selectedColor, setSelectedColor] = useState("#ebe6b6");
 
   const minTime = new Date();
   minTime.setHours(0, 0);
   const maxTime = new Date();
   maxTime.setHours(23, 59);
 
+  // location.state 업데이트 반영
   useEffect(() => {
     if (location.state?.selectedPlace) setPlace(location.state.selectedPlace);
     if (location.state?.selectedTitle) setTitle(location.state.selectedTitle);
     if (location.state?.selectedColor) setSelectedColor(location.state.selectedColor);
-    if (location.state?.selectedStartTime) setStartTime(new Date(location.state.selectedStartTime));
-    if (location.state?.selectedEndTime) setEndTime(new Date(location.state.selectedEndTime));
+
+    // 시간은 시간만 뽑아서 set (1970년 1월 1일 기준)
+    if (location.state?.selectedStartTime) setStartTime(extractTimeOnly(location.state.selectedStartTime));
+    if (location.state?.selectedEndTime) setEndTime(extractTimeOnly(location.state.selectedEndTime));
     if (location.state?.selectedDate) setSelectedDate(new Date(location.state.selectedDate));
     if (location.state?.latitude) setLatitude(location.state.latitude);
-    if (location.state?.longtitude) setLongitude(location.state.longitude);
+    if (location.state?.longitude) setLongitude(location.state.longitude);
   }, [location.state]);
 
+  // selectedDate(날짜)와 startTime, endTime(시간) 합쳐서 정확한 Date 객체 생성 (한국시간 기준)
+  const combineDateAndTime = (date, time) => {
+    if (!date || !time) return null;
+    const combined = new Date(date);
+    combined.setHours(time.getHours());
+    combined.setMinutes(time.getMinutes());
+    combined.setSeconds(0);
+    combined.setMilliseconds(0);
+    return combined;
+  };
+
   const handleDone = async () => {
-    if (endTime <= startTime) {
-    alert("종료 시간이 시작 시간보다 빠를 수 없습니다.");
-    return;
-  }
+    const startDateTime = combineDateAndTime(selectedDate, startTime);
+    const endDateTime = combineDateAndTime(selectedDate, endTime);
+
+    if (!startDateTime || !endDateTime) {
+    
+      return;
+    }
+
+    if (endDateTime <= startDateTime) {
+      alert("종료 시간이 시작 시간보다 빠를 수 없습니다.");
+      return;
+    }
+
     console.log("✅ handleDone() 호출됨");
 
     try {
       const scheduleData = {
         user_id: "5012f198-ca58-42ca-afde-41e1459a4cef",
         title: title || "제목 없음",
-        start_time: new Date(startTime).toISOString(),
-        end_time: new Date(endTime).toISOString(),
+        start_time: startDateTime.toISOString(), // UTC ISO string (백엔드 호환)
+        end_time: endDateTime.toISOString(),
         address: place,
-        latitude: latitude,  // 예시 좌표, 추후 장소 검색 API와 연동
-        longitude: longtitude,
+        latitude: latitude,  // 좌표 예시
+        longitude: longitude,
         is_recurring: false,
         color: selectedColor,
       };
-  
-      const response =await addSchedule(scheduleData);
+
+      const response = await addSchedule(scheduleData);
+
       const newEvent = {
         id: response.id,
         title: scheduleData.title,
-        start: new Date(scheduleData.start_time),
-        end: new Date(scheduleData.end_time),
+        start: startDateTime,  // 화면에 보여줄 땐 현지시간 Date 객체
+        end: endDateTime,
         place: scheduleData.address,
         color: selectedColor,
       };
       console.log("✅ newEvent 전달됨:", newEvent);
-      navigate("/timelineview", { state: { newEvent} });
+      navigate("/timelineview", { state: { newEvent } });
     } catch (err) {
       console.error("❌ 일정 추가 실패:", err);
     }
@@ -145,7 +178,7 @@ const AddScheduleScreen = () => {
                 onClick={() =>
                   navigate("/selectlocation", {
                     state: {
-                      returnTo: "/addschedule", // 돌아올 곳 명시
+                      returnTo: "/addschedule",
                       selectedTitle: title,
                       selectedColor: selectedColor,
                       selectedStartTime: startTime,
@@ -304,4 +337,3 @@ const styles = {
 };
 
 export default AddScheduleScreen;
- 

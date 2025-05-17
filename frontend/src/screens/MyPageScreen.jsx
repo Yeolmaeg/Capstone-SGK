@@ -23,8 +23,8 @@ const MyPageScreen = () => {
 
         <div style={styles.infoSection}>
             <div style={styles.infoRow}>
-                <span style={styles.boldText}>ID</span>
-                <input type="text" value="ewhain" readOnly style={styles.input} />
+                <span style={styles.boldText}>E-MAIL</span>
+                <input type="text" value="test@egmail.com" readOnly style={styles.input} />
             </div>
         <div style={styles.divider} />
           <div style={styles.infoRow}>
@@ -38,12 +38,12 @@ const MyPageScreen = () => {
         </div>
 
         <div style={styles.menuSection}>
-          <div style={styles.menuItem} onClick={() => navigate("/timetable")}>
+          <div style={styles.menuItem} onClick={() => navigate("/timetable-upload")}>
             <span style={styles.menuText}>시간표</span>
             <span style={styles.menuArrow}>➝</span>
           </div>
           <div style={styles.divider} />
-          <div style={styles.menuItem} onClick={() => navigate("/contacts")}>
+          <div style={styles.menuItem} onClick={() => navigate("/addresslist")}>
             <span style={styles.menuText}>주소록</span>
             <span style={styles.menuArrow}>➝</span>
           </div>
@@ -57,14 +57,10 @@ const styles = {
   container: {
     width: "100vw",
     height: "100vh",
-
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-    borderRadius: "10px",
     position: "relative",
     overflow: "hidden",
   },

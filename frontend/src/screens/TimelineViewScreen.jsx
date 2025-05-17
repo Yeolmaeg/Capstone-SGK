@@ -108,12 +108,13 @@ const TimelineViewScreen = () => {
   };
 
   const handleSelectEvent = (event) => {
+    console.log("선택된 이벤트 데이터:", event);
+
     if (event.isRecommended) {
-      const { estimatedTime, ...rest } = event;
-      navigate("/recommendationdetail", { state: { event: rest } });
-    } else {
-      navigate("/scheduledetail", { state: { event } });
-    }
+    navigate("/recommendationdetail", { state: { event } });
+  } else {
+    navigate("/scheduledetail", { state: { event } });
+  }
   };
 
   const slotPropGetter = (date) => {
@@ -148,6 +149,7 @@ const TimelineViewScreen = () => {
           end: new Date(e.end_time),
           place: e.address,
           color: e.color || "#3174ad",
+          isRecommended: e.source === "recommendation",  // 추천 여부 추가
         }));
   
         // ✅ 중복 제거 (id 기준)

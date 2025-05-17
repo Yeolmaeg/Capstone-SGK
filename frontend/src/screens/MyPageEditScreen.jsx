@@ -11,7 +11,6 @@ const MyPageEditScreen = () => {
   };
 
   const [nickname, setNickname] = useState("닉네임");
-  const [id, setId] = useState("ewhain");
   const [school, setSchool] = useState("이화여자대학교");
   const [studentId, setStudentId] = useState("2371006");
 
@@ -21,17 +20,14 @@ const MyPageEditScreen = () => {
       <div style={styles.content}>
         <div style={styles.profileSection}>
           <div style={styles.profileImage} />
-          <div style={styles.nicknameWrapper}>
-            <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} style={styles.input} />
-            <button style={styles.clearButton} onClick={() => setNickname("")}>✕</button>
           </div>
         </div>
         <div style={styles.infoSection}>
           <div style={styles.infoRow}>
-            <span style={styles.label}>ID</span>
+            <span style={styles.label}>닉네임</span>
             <div style={styles.inputWrapper}>
-              <input type="text" value={id} onChange={(e) => setId(e.target.value)} style={styles.input} />
-              <button style={styles.clearButton} onClick={() => setId("")}>✕</button>
+              <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} style={styles.input} />
+              <button style={styles.clearButton} onClick={() => setNickname("")}>✕</button>
             </div>
           </div>
           <div style={styles.divider} />
@@ -52,7 +48,6 @@ const MyPageEditScreen = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 
@@ -64,9 +59,6 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-    borderRadius: "10px",
     position: "relative",
     overflow: "hidden",
   },

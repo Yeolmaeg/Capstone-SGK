@@ -29,7 +29,6 @@ const TimetableUploadScreen = () => {
         setDetectedLectures(lectures);
       } catch (error) {
         console.error("OCR 처리 실패:", error);
-        alert("OCR 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
       } finally {
         setIsUploading(false);
       }
@@ -88,7 +87,7 @@ const TimetableUploadScreen = () => {
       <button
         style={styles.button}
         onClick={handleConfirm}
-        disabled={isUploading || detectedLectures.length === 0}
+        disabled={isUploading}
       >
         {isUploading ? "처리 중..." : "확인"}
       </button>

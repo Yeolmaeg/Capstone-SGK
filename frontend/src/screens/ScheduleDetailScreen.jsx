@@ -58,7 +58,7 @@ const ScheduleDetailScreen = () => {
     <div style={styles.container}>
       <DeleteTopBar title="일정 정보" onDelete={handleDelete} />
       <div style={styles.content}>
-        <div style={styles.wrapper}>
+        <div style={styles.formWrapper}>
           <div style={styles.itemRow}>
             <div style={{ ...styles.colorDot, backgroundColor: event.color || "#3174ad" }} />
             <span style={styles.text}>{event.title || "제목 없음"}</span>
@@ -77,7 +77,7 @@ const ScheduleDetailScreen = () => {
           </div>
         </div>
 
-        <div style={styles.footer}>
+        <div style={styles.bottomWrapper}>
           <button style={styles.editBtn} onClick={handleEdit}>
             편집
           </button>
@@ -95,21 +95,23 @@ const styles = {
     flexDirection: "column",
     backgroundColor: "#fff",
     overflow: "hidden",
+    position: "relative",
   },
   content: {
     flexGrow: 1,
-    paddingTop: "65px",
     display: "flex",
     flexDirection: "column",
+    paddingTop: "65px",
     alignItems: "center",
   },
-  wrapper: {
+  formWrapper: {
     width: "100%",
     maxWidth: "600px",
     padding: "0 5vw",
     display: "flex",
     flexDirection: "column",
     gap: "20px",
+    flexGrow: 1,
     boxSizing: "border-box",
   },
   itemRow: {
@@ -134,7 +136,7 @@ const styles = {
   divider: {
     borderBottom: "1px solid #ddd",
   },
-  footer: {
+  bottomWrapper: {
     width: "100%",
     maxWidth: "600px",
     padding: "0 5vw 20px",

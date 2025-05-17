@@ -16,7 +16,7 @@ const ScanningScreen = () => {
   return (
     <div style={styles.container}>
       <h1 style={styles.logo}>Dayfull</h1>
-      <p style={styles.loadingText}>시간표 스캔 중 ···</p>
+      <p style={styles.loadingText}>강의 일정 생성 중 ···</p>
     </div>
   );
 };
@@ -25,15 +25,11 @@ const styles = {
   container: {
     width: "100vw",
     height: "100vh",
-    margin: "0 auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-    borderRadius: "10px",
     position: "relative",
     overflow: "hidden",
   },

@@ -2,17 +2,43 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMapPin, FiClock } from "react-icons/fi";
 import DeleteTopBar from "../components/DeleteTopBar";
+import { getPlaceInfo } from "../api/place";
+import { deleteSchedule } from "../api/schedule";
 
 const RecommendationDetailScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [event, setEvent] = useState(location.state?.event || null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!event) {
       navigate("/timelineview", { replace: true });
+      return;
     }
-  }, [event, navigate]);
+
+    // description 또는 openingHours가 없으면 장소 상세 API 호출해서 보완
+    if ((!event.description || !event.openingHours) && event.title) {
+      setLoading(true);
+      getPlaceInfo(event.title)
+        .then((placeInfo) => {
+          setEvent((prev) => ({
+            ...prev,
+            description: placeInfo.description || "설명 없음",
+            openingHours: placeInfo.hours || "영업시간 정보 없음",
+          }));
+        })
+        .catch(() => {
+          // 실패 시 기본값 세팅 가능
+          setEvent((prev) => ({
+            ...prev,
+            description: prev.description || "설명 없음",
+            openingHours: prev.openingHours || "영업시간 정보 없음",
+          }));
+        })
+        .finally(() => setLoading(false));
+    }
+}, [event, navigate]);
 
   const handleEdit = () => {
     navigate("/editrecommendation", { state: { event } });
@@ -47,22 +73,19 @@ const RecommendationDetailScreen = () => {
       }).format(new Date(event.estimatedTime.end))}`
     : null;
 
-    const handleDelete = () => {
-        const stored = localStorage.getItem("savedEvents");
-        if (!stored) return;
-      
-        const parsed = JSON.parse(stored);
-        const filtered = parsed.filter(
-          (e) =>
-            e.title !== event.title ||
-            new Date(e.start).getTime() !== new Date(event.start).getTime() ||
-            new Date(e.end).getTime() !== new Date(event.end).getTime()
-        );
-      
-        localStorage.setItem("savedEvents", JSON.stringify(filtered));
+   const handleDelete = async () => {
+      try {
+        // DB에서 삭제 요청 (event.id가 recommendation ID라고 가정)
+        await deleteSchedule(event.id);
+
+        // 삭제 후 화면 이동 및 상태 전달
         navigate("/timelineview", { state: { deletedEvent: event } });
-      };
-      
+      } catch (error) {
+        console.error("추천 일정 삭제 실패:", error);
+        alert("추천 일정 삭제 중 문제가 발생했습니다.");
+      }
+    };
+          
 
   return (
     <div style={styles.container}>

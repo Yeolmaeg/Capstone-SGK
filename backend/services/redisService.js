@@ -11,5 +11,10 @@ async function saveUserPreferences(userId, keywords) {
   await redis.sadd(key, ...keywords);
 }
 
+async function removeUserPreferences(userId, keywords) {
+  const key = `user:${userId}:preferences`;
+  await redis.srem(key, ...keywords);
+}
 
-module.exports = { saveUserPreferences, getUserPreferences };
+
+module.exports = { saveUserPreferences, getUserPreferences,  removeUserPreferences };

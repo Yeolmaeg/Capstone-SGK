@@ -30,7 +30,6 @@ const PlaceModal = ({ onClose }) => {
       onClose(); // 모달 닫고
       navigate("/timelineview", { state: { newEvent } }); // 일정 추가
     } catch (err) {
-      alert("❌ 일정 생성에 실패했습니다.");
       console.error(err);
     } finally {
       setLoading(false);

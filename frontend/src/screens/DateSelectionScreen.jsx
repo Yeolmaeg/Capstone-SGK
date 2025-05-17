@@ -68,16 +68,12 @@ const DateSelectionScreen = () => {
 const styles = {
   container: {
     width: "100vw",
-    height: "100vh",
-    margin: "0 auto",
+    height: "100vh", 
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "flex-start",  // 부모 요소를 상단 정렬
+    justifyContent: "space-between", 
     backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-    borderRadius: "10px",
     position: "relative",
     overflow: "hidden",
   },
@@ -85,7 +81,7 @@ const styles = {
     fontSize: "20px",
     fontWeight: "bold",
     color: "#222",
-    marginTop: "35px",
+    marginTop: "100px",
     marginBottom: "10px", // 제목과 다른 요소들 사이의 간격을 좁힘
     textAlign: "center",
   },
@@ -144,6 +140,7 @@ const styles = {
     cursor: "pointer",
     fontSize: "16px",
     fontWeight: "bold",
+    marginBottom: "100px",
   },
   separator: {
     width: "80%",

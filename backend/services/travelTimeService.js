@@ -3,7 +3,8 @@ const haversine = require("haversine-distance");
 const { parseDuration } = require("../utils/parseDuration"); // 유틸에서 분 단위 변환 함수 가져오기
 
 const GOOGLE_MAPS_API_KEY = (process.env.GOOGLE_MAPS_API_KEY || "").trim();
-const OPENAI_API_KEY = "...";
+const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || "").trim();
+
  
 
 

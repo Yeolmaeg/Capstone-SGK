@@ -2,6 +2,7 @@ const service = require("../services/recommendationService");
 const travelTimeService = require("../services/travelTimeService"); 
 const db = require("../lib/db");
 const scheduleService = require("../services/scheduleService");
+const placeService = require('../services/placeService');
 
 exports.getRecommendation = async (req, res) => {
   const { userId, time } = req.query;
@@ -175,6 +176,10 @@ exports.autoCreateScheduleFromRecommendation = async (req, res) => {
       driving: durations.drive,
       transit: durations.transit,
     };
+
+    console.log("🚗 이동시간 (분) - 도보:", durations.walk);
+    console.log("🚆 이동시간 (분) - 대중교통:", durations.transit);
+    console.log("🚙 이동시간 (분) - 자차:", durations.drive);
 
     let shortestType = "walking";
     let shortestDuration = durations.walk;
