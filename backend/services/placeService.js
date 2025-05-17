@@ -18,13 +18,13 @@ const getPlaceInfo = async (placeName) => {
   return result.rows[0] || null;
 };
 
-// 장소 설명 조회 (ID로 조회)
-const getPlaceDescriptionById = async (id) => {
+exports.getPlaceDescriptionById = async (placeId) => {
   const result = await db.query(
     'SELECT description FROM places WHERE id = $1',
-    [id]
+    [placeId]
   );
   return result.rows[0]?.description || null;
+
 };
 
 // 장소 추가 함수
