@@ -18,12 +18,10 @@ exports.getPlaceInfo = async (placeName) => {
   return result.rows[0] || null;
 };
 
-async function getPlaceDescriptionById(placeId) {
+exports.getPlaceDescriptionById = async (placeId) => {
   const result = await db.query(
     'SELECT description FROM places WHERE id = $1',
     [placeId]
   );
   return result.rows[0]?.description || null;
-}
-
-module.exports = { getPlaceDescriptionById };
+};

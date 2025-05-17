@@ -16,6 +16,7 @@ const { generateNextMonthRecurringSchedules } = require("./services/scheduleServ
 const preferenceRoutes = require('./routes/preferenceRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const classScheduleRoutes = require("./routes/classScheduleRoutes");
+const placeRoutes = require('./routes/placeRoutes');
 
 // 미들웨어
 const authMiddleware = require('./middleware/authMiddleware');
@@ -46,6 +47,7 @@ app.use('/api/preferences', preferenceRoutes);
 app.use('/api', feedbackRoutes);
 app.use("/api", classScheduleRoutes);
 app.use("/api", distanceRoutes);
+app.use('/api/places', placeRoutes);
 
 
 // app.use("/api", distanceRoutes);
