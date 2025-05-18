@@ -1,6 +1,6 @@
 // AddAddressScreen.jsx
 import React, { useState } from "react";
-import TopBar from "../components/TopBar";
+import AddTopBar from "../components/AddTopBar";
 
 const AddAddressScreen = () => {
  const [addressName, setAddressName] = useState("");
@@ -12,7 +12,7 @@ const AddAddressScreen = () => {
 
   return (
     <div style={styles.container}>
-      <TopBar />
+      <AddTopBar />
       <main style={styles.main}>
         <h2 style={styles.title}>주소 추가</h2>
 

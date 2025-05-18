@@ -1,53 +1,89 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DoneTopBar from "../components/DoneTopBar";
-import BottomBar from "../components/BottomBar";
 
 const MyPageEditScreen = () => {
   const navigate = useNavigate();
 
-  const handleDone = () => {
+  // 🔄 Local Storage에서 초기값 로드 (일관된 키 사용)
+  const [nickname, setNickname] = useState(() => localStorage.getItem("nickname") || "닉네임");
+  const [school, setSchool] = useState(() => localStorage.getItem("university") || "이화여자대학교");
+  const [studentId, setStudentId] = useState(() => localStorage.getItem("studentId") || "2371006");
+
+  // ✅ 저장 함수 (Local Storage)
+  const handleSave = () => {
+    localStorage.setItem("nickname", nickname);
+    localStorage.setItem("university", school);
+    localStorage.setItem("studentId", studentId);
+    alert("프로필 정보가 저장되었습니다.");
     navigate("/mypage");
   };
 
-  const [nickname, setNickname] = useState("닉네임");
-  const [school, setSchool] = useState("이화여자대학교");
-  const [studentId, setStudentId] = useState("2371006");
+  // 🔄 입력 필드 변경 시 Local Storage 동기화
+  useEffect(() => {
+    localStorage.setItem("nickname", nickname);
+  }, [nickname]);
+
+  useEffect(() => {
+    localStorage.setItem("university", school);
+  }, [school]);
+
+  useEffect(() => {
+    localStorage.setItem("studentId", studentId);
+  }, [studentId]);
 
   return (
     <div style={styles.container}>
-      <DoneTopBar onDone={handleDone} />
+      <DoneTopBar onDone={handleSave} />
       <div style={styles.content}>
         <div style={styles.profileSection}>
           <div style={styles.profileImage} />
-          </div>
         </div>
+
         <div style={styles.infoSection}>
           <div style={styles.infoRow}>
             <span style={styles.label}>닉네임</span>
             <div style={styles.inputWrapper}>
-              <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} style={styles.input} />
+              <input 
+                type="text" 
+                value={nickname} 
+                onChange={(e) => setNickname(e.target.value)} 
+                style={styles.input} 
+              />
               <button style={styles.clearButton} onClick={() => setNickname("")}>✕</button>
             </div>
           </div>
           <div style={styles.divider} />
+
           <div style={styles.infoRow}>
             <span style={styles.label}>학교</span>
             <div style={styles.inputWrapper}>
-              <input type="text" value={school} onChange={(e) => setSchool(e.target.value)} style={styles.input} />
+              <input 
+                type="text" 
+                value={school} 
+                onChange={(e) => setSchool(e.target.value)} 
+                style={styles.input} 
+              />
               <button style={styles.clearButton} onClick={() => setSchool("")}>✕</button>
             </div>
           </div>
           <div style={styles.divider} />
+
           <div style={styles.infoRow}>
             <span style={styles.label}>학번</span>
             <div style={styles.inputWrapper}>
-              <input type="text" value={studentId} onChange={(e) => setStudentId(e.target.value)} style={styles.input} />
+              <input 
+                type="text" 
+                value={studentId} 
+                onChange={(e) => setStudentId(e.target.value)} 
+                style={styles.input} 
+              />
               <button style={styles.clearButton} onClick={() => setStudentId("")}>✕</button>
             </div>
           </div>
         </div>
       </div>
+    </div>
   );
 };
 
@@ -82,21 +118,16 @@ const styles = {
     borderRadius: "50%",
     marginBottom: "10px",
   },
-  nicknameWrapper: {
-    display: "flex",
-    alignItems: "center",
-    width: "100%",
-    justifyContent: "center",
-  },
   inputWrapper: {
     display: "flex",
     alignItems: "center",
     width: "100%",
     backgroundColor: "#f9f9f9",
     borderRadius: "5px",
+    padding: "5px",
   },
   input: {
-    flex: 1,                                                                                                                
+    flex: 1,
     border: "none",
     backgroundColor: "transparent",
     fontSize: "16px",

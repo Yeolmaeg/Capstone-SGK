@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const SignupScreen = () => {
   const navigate = useNavigate();
 
+  // 🔄 초기 상태 설정 (LocalStorage에서 초기값 로드)
+  const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [studentId, setStudentId] = useState("");
 
+  // 🔄 페이지가 로드될 때 LocalStorage 초기화 (새로고침 시 초기화)
+  useEffect(() => {
+    setNickname("");
+    setEmail("");
+    setPassword("");
+    setPasswordConfirm("");
+    setStudentId("");
+  }, []);
+
   const handleSignup = () => {
-    if (!email.trim() || !password || !passwordConfirm || !studentId.trim()) {
+    if (!nickname.trim() || !email.trim() || !password || !passwordConfirm || !studentId.trim()) {
       alert("모든 필드를 입력해주세요.");
       return;
     }
@@ -18,15 +29,22 @@ const SignupScreen = () => {
       alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
       return;
     }
-    // 추가 회원가입 로직 (API 호출 등) 넣기
 
-    // 성공 시 페이지 이동 예시
+    // 🔄 LocalStorage에 최종 데이터 저장
+    localStorage.setItem("nickname", nickname);
+    localStorage.setItem("email", email);
+    localStorage.setItem("password", password);
+    localStorage.setItem("studentId", studentId);
+
+
+    // 메인 페이지로 이동 (필요 시 수정)
     navigate("/");
   };
 
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Dayfull</h1>
+
 
       <div style={styles.formGroup}>
         <label style={styles.label}>E-MAIL</label>
@@ -69,6 +87,17 @@ const SignupScreen = () => {
           placeholder="학번을 입력하세요"
           value={studentId}
           onChange={(e) => setStudentId(e.target.value)}
+        />
+      </div>
+
+      <div style={styles.formGroup}>
+        <label style={styles.label}>닉네임</label>
+        <input
+          type="text"
+          style={styles.input}
+          placeholder="닉네임을 입력하세요"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
         />
       </div>
 

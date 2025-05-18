@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EditTopBar from "../components/EditTopBar";
-import BottomBar from "../components/BottomBar";
 
 const MyPageScreen = () => {
   const navigate = useNavigate();
+  
+  // 🔄 Local Storage에서 회원 정보 불러오기
+  const [email, setEmail] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [university, setUniversity] = useState("");
+
+  useEffect(() => {
+    // 일관된 키 이름 사용 (회원가입에서 저장한 키)
+    const storedEmail = localStorage.getItem("email") || "example@gmail.com";
+    const storedStudentId = localStorage.getItem("studentId") || "2371006";
+    const storedNickname = localStorage.getItem("nickname") || "닉네임";
+    const storedUniversity = localStorage.getItem("university") || "이화여자대학교";
+
+    setEmail(storedEmail);
+    setStudentId(storedStudentId);
+    setNickname(storedNickname);
+    setUniversity(storedUniversity);
+  }, []);
 
   const handleDone = () => {
     navigate("/editmypage");
@@ -18,22 +36,26 @@ const MyPageScreen = () => {
       <div style={styles.content}>
         <div style={styles.profileSection}>
           <div style={styles.profileImage} />
-          <div style={styles.nickname}>닉네임</div>
+          <div style={styles.nickname}>{nickname}</div>
         </div>
 
         <div style={styles.infoSection}>
-            <div style={styles.infoRow}>
-                <span style={styles.boldText}>E-MAIL</span>
-                <input type="text" value="test@egmail.com" readOnly style={styles.input} />
-            </div>
-        <div style={styles.divider} />
+          <div style={styles.infoRow}>
+            <span style={styles.boldText}>E-MAIL</span>
+            <input type="text" value={email} readOnly style={styles.input} />
+          </div>
+          <div style={styles.divider} />
+          
           <div style={styles.infoRow}>
             <span style={styles.boldText}>학교</span>
-            <input type="text" value="이화여자대학교" readOnly style={styles.input} /></div>
+            <input type="text" value={university} readOnly style={styles.input} />
+          </div>
           <div style={styles.divider} />
+          
           <div style={styles.infoRow}>
             <span style={styles.boldText}>학번</span>
-            <input type="text" value="2371006" readOnly style={styles.input} /></div>
+            <input type="text" value={studentId} readOnly style={styles.input} />
+          </div>
           <div style={styles.divider} />
         </div>
 
@@ -43,6 +65,7 @@ const MyPageScreen = () => {
             <span style={styles.menuArrow}>➝</span>
           </div>
           <div style={styles.divider} />
+          
           <div style={styles.menuItem} onClick={() => navigate("/addresslist")}>
             <span style={styles.menuText}>주소록</span>
             <span style={styles.menuArrow}>➝</span>

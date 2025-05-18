@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMapPin, FiClock } from "react-icons/fi";
-import CancelTopBar from "../components/CancelTopBar";
+import DeleteTopBar from "../components/DeleteTopBar";
 import ColorPicker from "../components/ColorPicker";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
@@ -170,7 +170,7 @@ const RecommendationScreen = () => {
 
   return (
     <div style={styles.container}>
-      <CancelTopBar />
+      <DeleteTopBar />
       <div style={styles.content}>
         <div style={styles.formWrapper}>
           {loading ? (
