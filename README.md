@@ -1,31 +1,39 @@
-# E-CLAIR - Dayfull: Context-Based Schedule Recommendation Service  
+# Dayfull
 
-## Introduction
-Dayfull은 사용자 맥락 정보를 기반으로 **일정 추천**을 제공하는 서비스입니다.  
-GPT-4 기반 챗봇과 Perplexity API를 활용하여 사용자 특성을 분석하고, Redis를 통해 데이터를 관리합니다.
+> 가고 싶은 장소를 입력하면 자동으로 일정을 생성하고, 빈 시간에는 사용자 성향에 맞는 장소를 추천해주는 **대학생 맞춤 스마트 캘린더 서비스** 
 
 ---
 
-## What is Dayfull?  
-1. **GPT-4 기반 대화 요약 및 성향 분석**  
-   - `dayfull_timetable.py`  
-   - 사용자의 대화를 요약하고, 성향 및 특징을 분석해 일정 추천에 활용합니다.  
+## What is Dayfull?
 
-2. **Perplexity API를 활용한 일정 추천**  
-   - `recomm.py`  
-   - 사용자 요구사항과 맥락을 반영해 최신 데이터를 기반으로 맞춤형 일정을 추천합니다.  
+**Dayfull**은 단순한 일정 관리 도구를 넘어, 대학생의 일상 속 *빈 시간*을 의미 있게 채워주는 **스마트 일정 추천 캘린더**입니다.
 
-3. **Redis를 활용한 데이터 저장 및 관리**  
-   - `redis_connection.py`  
-   - 사용자 비정형 데이터를 정리하고 Redis에 저장해 빠르게 조회하고 활용합니다.
+### 주요 기능
+- 📍 **장소 기반 일정 생성**: 장소명만 입력하면 운영 시간, 위치 등을 자동으로 탐색해 일정 생성
+- 🗓️ **시간표 OCR**: 이미지 업로드만으로 한 학기 강의 일정 자동 생성
+- 🧭 **동선 고려 자동 배치**: 기존 일정과 이동 거리/시간을 고려해 효율적인 시간대 추천
+- 💡 **장소 추천**: Perplexity + Kakao API를 활용해 빈 시간에 어울리는 장소 제안
+- 🧠 **개인화 추천**: 추천 결과에 대한 만족도를 학습해 다음 추천에 반영
 
 ---
 
-## Tech Stack 
-- **Python**: 메인 프로그래밍 언어  
-- **OpenAI GPT-4 API**: 사용자 대화 요약 및 분석  
-- **Perplexity API**: 웹 브라우징 기반 일정 추천  
-- **Redis**: 사용자 데이터 저장 및 조회  
-- **Docker**: 애플리케이션 컨테이너화  
+## 🛠️ Tech Stack
+
+### Frontend
+- **React 18.2.0** – 타임라인 UI, 사용자 인터페이스 구현
+
+### Backend
+- **Node.js + Express** – API 서버 및 비즈니스 로직 처리
+- **PostgreSQL 17** – 사용자 일정, 장소, 추천 정보 저장
+- **Redis 6.2** – 사용자 선호 키워드 저장
+
+### AI / API
+- **Google Vision API** – 시간표 OCR 처리
+- **Perplexity API** – 장소 정보/추천 수집
+- **OpenAI GPT-4o** – 이동 시간 요약, 개인화 추천 키워드 추출
+- **Kakao Local API** – 장소 위치 및 소요 시간 확인
+
+### DevOps
+- **Docker + docker-compose** – 통합 실행 환경 구성
 
 ---
