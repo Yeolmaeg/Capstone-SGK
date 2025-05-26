@@ -18,7 +18,7 @@ const getPlaceInfo = async (placeName) => {
   return result.rows[0] || null;
 };
 
-exports.getPlaceDescriptionById = async (placeId) => {
+const getPlaceDescriptionById = async (placeId) => {
   const result = await db.query(
     'SELECT description FROM places WHERE id = $1',
     [placeId]

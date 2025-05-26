@@ -102,14 +102,14 @@ exports.recommendPlace = async (userId, time) => {
   {
     "장소 이름": "...",
     "위치": "...",
-    "설명": "...",
+    "한 줄 설명": "...",
     "카테고리": "...",
     "키워드": "...",
     "영업 시간": "...",
     "위도": ...,
     "경도": ...
   }
-]`.trim();
+] 반드시 위 형식의 json배열로 응답해. 다른 말 수식하지 마`.trim();
 
   const response = await axios.post(API_URL, {
     model: "sonar-pro",

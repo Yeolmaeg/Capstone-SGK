@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const placeController = require("../controllers/placeController");
+const {getPlaceDescription} = require("../controllers/placeController");
 
-router.get("/description/:placeId", placeController.getPlaceDescription);
+router.get("/description/:placeId", getPlaceDescription);
 
 module.exports = router;
