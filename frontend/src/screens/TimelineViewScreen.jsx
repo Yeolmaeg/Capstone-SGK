@@ -140,7 +140,7 @@ const TimelineViewScreen = () => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        const user_id = "5012f198-ca58-42ca-afde-41e1459a4cef";
+        const user_id = "b0448e3d-7b24-4119-83a5-7bab4ebcc0d0";
         const data = await getSchedules(user_id);
   
         const formatted = data.map((e) => ({
@@ -150,6 +150,7 @@ const TimelineViewScreen = () => {
           place: e.address,
           color: e.color || "#3174ad",
           isRecommended: e.source === "recommendation",  // 추천 여부 추가
+          place_id: e.place_id,
         }));
   
         // ✅ 중복 제거 (id 기준)
@@ -180,7 +181,10 @@ const TimelineViewScreen = () => {
         ...state.newEvent,
         start: new Date(state.newEvent.start),
         end: new Date(state.newEvent.end),
+        place_id: state.newEvent.place_id,
       };
+
+      console.log("🔥 최종 newEvent:", newEvent);
   
       setEvents((prev) => {
         const isDuplicate = prev.some((e) => e.id === newEvent.id);

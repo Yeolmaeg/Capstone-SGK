@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMapPin, FiClock } from "react-icons/fi";
 import DeleteTopBar from "../components/DeleteTopBar";
-import { getPlaceInfo } from "../api/place";
+import { getPlaceById } from "../api/place";
 import { deleteSchedule } from "../api/schedule";
 
 const RecommendationDetailScreen = () => {
@@ -11,40 +11,56 @@ const RecommendationDetailScreen = () => {
   const [event, setEvent] = useState(location.state?.event || null);
   const [loading, setLoading] = useState(false);
 
+ 
+
   useEffect(() => {
     if (!event) {
       navigate("/timelineview", { replace: true });
       return;
     }
+     
+       const fetchPlaceDetails = async () => {
+    try {
+      if (!event.place_id) {
+        console.warn("place_id 없음, 장소 정보 조회 생략");
+        return;
+      }
 
-    // description 또는 openingHours가 없으면 장소 상세 API 호출해서 보완
-    if ((!event.description || !event.openingHours) && event.title) {
-      setLoading(true);
-      getPlaceInfo(event.title)
-        .then((placeInfo) => {
-          setEvent((prev) => ({
-            ...prev,
-            description: placeInfo.description || "설명 없음",
-            openingHours: placeInfo.hours || "영업시간 정보 없음",
-          }));
-        })
-        .catch(() => {
-          // 실패 시 기본값 세팅 가능
-          setEvent((prev) => ({
-            ...prev,
-            description: prev.description || "설명 없음",
-            openingHours: prev.openingHours || "영업시간 정보 없음",
-          }));
-        })
-        .finally(() => setLoading(false));
+      const placeData = await getPlaceById(event.place_id);
+
+      setEvent((prev) => ({
+        ...prev,
+        description: placeData.description || "설명 없음",
+        openingHours: placeData.hours || "영업시간 정보 없음",
+      }));
+    } catch (error) {
+      console.error("장소 정보 조회 실패:", error);
+      setEvent((prev) => ({
+        ...prev,
+        description: prev.description || "설명 없음",
+        openingHours: prev.openingHours || "영업시간 정보 없음",
+      }));
     }
-}, [event, navigate]);
+  };
+
+  fetchPlaceDetails();
+}, []);
 
   const handleEdit = () => {
     navigate("/editrecommendation", { state: { event } });
   };
 
-  if (!event) return null;
+  const handleDelete = async () => {
+  try {
+    await deleteSchedule(event.id); // 서버 삭제 완료 대기
+    navigate("/timelineview", { replace: true, state: { deletedEvent: event } });
+  } catch (error) {
+    console.error("일정 삭제 실패:", error);
+  }
+};
+
+if (!event) return null;
+
 
   const formattedDateTime = `${new Intl.DateTimeFormat("ko-KR", {
     year: "numeric",
@@ -72,19 +88,6 @@ const RecommendationDetailScreen = () => {
         hour12: false,
       }).format(new Date(event.estimatedTime.end))}`
     : null;
-
-   const handleDelete = async () => {
-      try {
-        // DB에서 삭제 요청 (event.id가 recommendation ID라고 가정)
-        await deleteSchedule(event.id);
-
-        // 삭제 후 화면 이동 및 상태 전달
-        navigate("/timelineview", { state: { deletedEvent: event } });
-      } catch (error) {
-        console.error("추천 일정 삭제 실패:", error);
-        alert("추천 일정 삭제 중 문제가 발생했습니다.");
-      }
-    };
           
 
   return (
@@ -94,17 +97,17 @@ const RecommendationDetailScreen = () => {
         <div style={styles.wrapper}>
           <div style={styles.itemRow}>
             <div style={{ ...styles.colorDot, backgroundColor: event.color || "#3174ad" }} />
-            <span style={styles.text}>{event.title || "제목 없음"}</span>
+            <span style={styles.text}>{event.title || "장소 이름 없음"}</span>
           </div>
           <div style={styles.label}>한 줄 소개</div>
-          <div style={styles.description}>{event.description}</div>
+          <span style={styles.text}>{event.description || "설명 없음"}</span>
           <div style={styles.divider} />
 
           <div style={styles.itemRow}>
             <FiMapPin style={styles.icon} />
-            <span style={styles.text}>{event.place || "장소 정보 없음"}</span>
+            <span style={styles.text}>{event.address || "주소 정보 없음"}</span>
           </div>
-          <div style={styles.subtext}>영업시간: {event.openingHours}</div>
+          <div style={styles.subtext}>{event.openingHours || "영업시간 정보 없음"}</div>
           <div style={styles.divider} />
 
           <div style={styles.itemRow}>

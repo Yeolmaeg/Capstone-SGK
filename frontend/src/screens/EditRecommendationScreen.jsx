@@ -14,7 +14,7 @@ const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
     value={value}
     onClick={onClick}
     readOnly
-    placeholder="날짜 선택"
+    placeholder="일자 선택"
     style={styles.input}
   />
 ));
@@ -39,11 +39,13 @@ const EditRecommendationScreen = () => {
   const location = useLocation();
   const originalEvent = location.state?.event;
 
+  const [moveType, setMoveType] = useState("transit");
   const [selectedColor, setSelectedColor] = useState("#ebe6b6");
   const [place, setPlace] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date(Date.now() + 3600000));
+  const [moveDuration, setMoveDuration] = useState(null);
 
   useEffect(() => {
     if (!originalEvent) {
@@ -53,6 +55,9 @@ const EditRecommendationScreen = () => {
 
     setSelectedColor(originalEvent.color || "#ebe6b6");
     setPlace(originalEvent.place || "");
+    setMoveType(originalEvent.moveType || "transit");
+    setMoveDuration(originalEvent.move_duration || originalEvent.estimatedMoveDuration || null);
+
     const start = new Date(originalEvent.start);
     const end = new Date(originalEvent.end);
     setSelectedDate(start);
@@ -67,20 +72,10 @@ const EditRecommendationScreen = () => {
       end: endTime,
       place,
       color: selectedColor,
+      moveType,
+      estimatedMoveDuration: moveDuration,
     };
 
-    const stored = localStorage.getItem("savedEvents");
-    const events = stored ? JSON.parse(stored) : [];
-
-    const updatedEvents = events.map((e) =>
-      e.title === originalEvent.title &&
-      new Date(e.start).getTime() === new Date(originalEvent.start).getTime() &&
-      new Date(e.end).getTime() === new Date(originalEvent.end).getTime()
-        ? updatedEvent
-        : e
-    );
-
-    localStorage.setItem("savedEvents", JSON.stringify(updatedEvents));
     navigate("/timelineview", { state: { updatedEvent } });
   };
 
@@ -92,7 +87,9 @@ const EditRecommendationScreen = () => {
   if (!originalEvent) return null;
 
   const estimatedStart = new Date(startTime);
-  const estimatedEnd = new Date(estimatedStart.getTime() + 4 * 60000);
+  const estimatedEnd = moveDuration
+    ? new Date(estimatedStart.getTime() + moveDuration * 60000)
+    : new Date(estimatedStart.getTime() + 17 * 60000);
 
   return (
     <div style={styles.container}>
@@ -105,7 +102,7 @@ const EditRecommendationScreen = () => {
               <strong style={styles.placeName}>{originalEvent.title}</strong>
             </div>
             <span style={styles.introLabel}>한 줄 소개</span>
-            <p style={styles.description}>{originalEvent.description}</p>
+            <p style={styles.description}>{originalEvent.description || "설명 정보 없음"}</p>
           </div>
 
           <div style={styles.divider} />
@@ -116,20 +113,29 @@ const EditRecommendationScreen = () => {
               <input
                 type="text"
                 value={place}
+                readOnly
                 onChange={(e) => setPlace(e.target.value)}
                 placeholder="장소명을 입력하세요"
                 style={styles.input}
               />
             </div>
             <div style={{ ...styles.subtext, marginLeft: "28px" }}>
-              영업시간: {originalEvent.openingHours}
+              영업시간: {originalEvent.openingHours || "정보 없음"}
             </div>
             <div style={{ ...styles.buttonRow, justifyContent: "center" }}>
-              <button style={styles.tagButton}>도보</button>
-              <button style={styles.tagButton}>대중교통</button>
-              <button style={styles.tagButton}>자차</button>
+              {["walking", "transit", "driving"].map((type) => (
+                <button
+                  key={type}
+                  style={moveType === type ? styles.selectedTagButton : styles.tagButton}
+                  onClick={() => setMoveType(type)}
+                >
+                  {type === "walking" ? "도보" : type === "transit" ? "대중교통" : "자차"}
+                </button>
+              ))}
             </div>
-            <div style={{ ...styles.subtext, textAlign: "center" }}>약 4분 소요</div>
+            <div style={{ ...styles.subtext, textAlign: "center" }}>
+              {moveDuration != null ? `약 ${Math.round(moveDuration)}분 소요` : "이동시간 정보 없음"}
+            </div>
           </div>
 
           <div style={styles.divider} />
@@ -276,6 +282,8 @@ const styles = {
     backgroundColor: "transparent",
     border: "1px solid #ccc",
     fontSize: "14px",
+    cursor: "pointer",
+
   },
   buttonRow: {
     display: "flex",
@@ -323,6 +331,14 @@ const styles = {
     cursor: "pointer",
     boxSizing: "border-box",
   },
+  selectedTagButton: {
+  padding: "6px 12px",
+  //backgroundColor: "#56c8d8",
+  border: "2px solid #000",
+  color: "#000",
+  fontSize: "14px",
+  cursor: "pointer",
+},
 };
 
 export default EditRecommendationScreen;

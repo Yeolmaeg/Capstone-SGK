@@ -3,10 +3,11 @@ import axios from "axios";
 const BASE_URL = "http://localhost:5000/api";
 
 // 1. 자동 추천 일정 생성 (4-7)
-export const autoCreateRecommendedSchedule = async (userId, timeISO) => {
+export const autoCreateRecommendedSchedule = async (userId, timeISO, color) => {
   const response = await axios.post(`${BASE_URL}/recommendation/auto`, {
     user_id: userId,
     time: timeISO,
+    color,
   });
 
    const data = response.data;

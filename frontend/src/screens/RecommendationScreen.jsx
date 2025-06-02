@@ -1,12 +1,13 @@
 import React, { useState, useEffect, forwardRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMapPin, FiClock } from "react-icons/fi";
-import DeleteTopBar from "../components/DeleteTopBar";
+import CancelTopBar from "../components/CancelTopBar";
 import ColorPicker from "../components/ColorPicker";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
 
+import { addPlace } from "../api/place";
 import { autoCreateRecommendedSchedule } from "../api/recommendation";
 
 const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
@@ -40,18 +41,16 @@ const RecommendationScreen = () => {
   const location = useLocation();
   const selectedSlot = location.state?.selectedSlot;
 
-  // 일정 생성 시 사용할 날짜
   const [selectedDate, setSelectedDate] = useState(selectedSlot?.start || new Date());
   const [startTime, setStartTime] = useState(selectedSlot?.start || new Date());
   const [endTime, setEndTime] = useState(selectedSlot?.end || new Date(Date.now() + 3600000));
 
-  // 추천 장소 정보 상태
   const [placeData, setPlaceData] = useState(null);
+  const [scheduleData, setScheduleData] = useState(null); // 🔹 추가
   const [loading, setLoading] = useState(false);
   const [selectedColor, setSelectedColor] = useState("#ebe6b6");
 
-  // 이동수단 선택 상태
-  const [moveType, setMoveType] = useState("walking"); // 기본값 도보
+  const [moveType, setMoveType] = useState("walking");
   const [moveDuration, setMoveDuration] = useState(null);
 
   const minTime = new Date();
@@ -59,118 +58,106 @@ const RecommendationScreen = () => {
   const maxTime = new Date();
   maxTime.setHours(23, 59);
 
-  // API 호출해서 추천 일정 자동 생성
   useEffect(() => {
-  if (!selectedDate) return;
+    if (!selectedDate) return;
 
-  const fetchRecommendation = async () => {
-    setLoading(true);
-    try {
-      const user_id = "5012f198-ca58-42ca-afde-41e1459a4cef"; // 실제 로그인 유저 ID로 변경 필요
-      const timeISO = selectedDate.toISOString();
+    const fetchRecommendation = async () => {
+      setLoading(true);
+      try {
+        const user_id = "b0448e3d-7b24-4119-83a5-7bab4ebcc0d0"; // TODO: 실제 로그인 유저 ID로 교체
+        const timeISO = selectedDate.toISOString();
 
-      const result = await autoCreateRecommendedSchedule(user_id, timeISO);
-      console.log("추천 일정 API 결과:", result);
-      
-      if (result.place) {
-        const placeData = result.place;
-        const schedule = result.schedule || {};
+        const result = await autoCreateRecommendedSchedule(user_id, timeISO, selectedColor);
+        console.log("추천 일정 API 결과:", result);
 
-        setPlaceData({
-          name: placeData.name || "알 수 없는 장소",
-          address: placeData.address || "알 수 없는 주소",
-          description: placeData.description || "설명 없음",
-          walk_duration: schedule.walk_duration || 0,
-          transit_duration: schedule.transit_duration || 0,
-          drive_duration: schedule.drive_duration || 0,
-          hours: placeData.hours || null,
-        });
+        const place = result.place;
+        const schedule = result.schedule;
+
+        if (place && schedule) {
+          setPlaceData({
+            id: result.placeId,
+            name: place.name,
+            address: place.address,
+            description: place.description,
+            latitude: place.latitude,
+            longitude: place.longitude,
+            category: place.category,
+            hours: place.hours,
+            walk_duration: schedule.walk_duration,
+            transit_duration: schedule.transit_duration,
+            drive_duration: schedule.drive_duration,
+          });
+
+          setScheduleData(schedule); // 🔹 저장
+          setStartTime(new Date(schedule.start_time));
+          setEndTime(new Date(schedule.end_time));
+          setMoveType(schedule.move_type || "walking");
+          setMoveDuration(schedule.move_duration || null);
+        }
+      } catch (error) {
+        console.error("추천 일정 생성 실패:", error);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      if (result.schedule) {
-        setStartTime(new Date(result.schedule.start_time));
-        setEndTime(new Date(result.schedule.end_time));
-        setMoveType(result.schedule.move_type || "walking");
-        setMoveDuration(result.schedule.move_duration || null);
-      }
-    } catch (error) {
-      console.error("추천 일정 생성 실패:", error);
-      alert("추천 일정 생성에 실패했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchRecommendation();
+  }, [selectedDate]);
 
-  fetchRecommendation();
-}, [selectedDate]);
-
-
-  // 이동수단 버튼 클릭 핸들러
   const onMoveTypeClick = (type) => {
-  console.log("이동수단 버튼 클릭:", type);
-  console.log("현재 placeData:", placeData);
-
-  setMoveType(type);
-  if (!placeData) {
-    console.warn("placeData가 없습니다.");
-    setMoveDuration(null);
-    return;
-  }
-
-  let duration = null;
-  switch (type) {
-    case "walking":
-      duration = placeData.walk_duration;
-      break;
-    case "transit":
-      duration = placeData.transit_duration;
-      break;
-    case "driving":
-      duration = placeData.drive_duration;
-      break;
-  }
-
-  if (typeof duration !== "number" || isNaN(duration)) {
-    console.warn(`${type} 이동시간이 없거나 유효하지 않습니다:`, duration);
-    duration = null;
-  }
-
-  console.log(`${type} 이동시간 (분):`, duration);
-  setMoveDuration(duration);
-  };
-
-  // 완료 버튼 클릭 시
-  const handleDone = () => {
+    setMoveType(type);
     if (!placeData) {
-      alert("추천 장소 정보가 없습니다.");
+      setMoveDuration(null);
       return;
     }
 
-    const newEvent = {
-      title: placeData.name,
-      start: startTime,
-      end: endTime,
-      place: placeData.address,
-      color: selectedColor,
-      description: placeData.description,
-      openingHours: placeData.hours || "영업시간 정보 없음",
-      estimatedMoveDuration: moveDuration,
-      moveType,
-      isRecommended: true,
-    };
+    let duration = {
+      walking: placeData.walk_duration,
+      transit: placeData.transit_duration,
+      driving: placeData.drive_duration,
+    }[type];
 
-    navigate("/timelineview", { state: { newEvent } });
+    if (typeof duration !== "number" || isNaN(duration)) {
+      duration = null;
+    }
+
+    setMoveDuration(duration);
   };
 
-  // 예상 이동 시간 계산 (startTime 기준 + 이동시간 분)
+  const handleDone = async () => {
+    if (!placeData || !scheduleData) return;
+
+    try {
+    
+      const newEvent = {
+        id: scheduleData.id,                // ✅ 정확한 schedule ID
+        place_id: placeData.id,   // ✅ place ID
+        title: placeData.name,
+        start: startTime,
+        end: endTime,
+        place: placeData.address,
+        color: selectedColor,
+        description: scheduleData.description,     
+        openingHours: scheduleData.opening_hours || "영업시간 정보 없음",
+        estimatedMoveDuration: moveDuration,
+        moveType,
+        isRecommended: true,
+      };
+
+      navigate("/timelineview", { state: { newEvent } });
+    } catch (err) {
+      console.error("🛑 장소 저장 또는 일정 생성 실패:", err);
+    }
+  };
+
   const estimatedStart = startTime;
   const estimatedEnd = moveDuration
-    ? new Date(estimatedStart.getTime() + moveDuration * 60 * 1000) // 분 → 밀리초 변환
+    ? new Date(estimatedStart.getTime() + moveDuration * 60 * 1000)
     : null;
 
   return (
     <div style={styles.container}>
-      <DeleteTopBar />
+      <CancelTopBar />
       <div style={styles.content}>
         <div style={styles.formWrapper}>
           {loading ? (
@@ -203,27 +190,18 @@ const RecommendationScreen = () => {
                   영업시간: {placeData.hours || "정보 없음"}
                 </div>
                 <div style={{ ...styles.buttonRow, justifyContent: "center" }}>
-                  <button
-                    style={moveType === "walking" ? styles.selectedtagButton : styles.tagButton}
-                    onClick={() => onMoveTypeClick("walking")}
-                  >
-                    도보
-                  </button>
-                  <button
-                    style={moveType === "transit" ? styles.selectedtagButton : styles.tagButton}
-                    onClick={() => onMoveTypeClick("transit")}
-                  >
-                    대중교통
-                  </button>
-                  <button
-                    style={moveType === "driving" ? styles.selectedtagButton : styles.tagButton}
-                    onClick={() => onMoveTypeClick("driving")}
-                  >
-                    자차
-                  </button>
+                  {["walking", "transit", "driving"].map((type) => (
+                    <button
+                      key={type}
+                      style={moveType === type ? styles.selectedtagButton : styles.tagButton}
+                      onClick={() => onMoveTypeClick(type)}
+                    >
+                      {type === "walking" ? "도보" : type === "transit" ? "대중교통" : "자차"}
+                    </button>
+                  ))}
                 </div>
                 <div style={{ ...styles.subtext, textAlign: "center" }}>
-                  {moveDuration !== null && moveDuration !== undefined ? `약 ${Math.round(moveDuration)}분 소요`: "이동시간 정보 없음"}
+                  {moveDuration != null ? `약 ${Math.round(moveDuration)}분 소요` : "이동시간 정보 없음"}
                 </div>
               </div>
 

@@ -27,7 +27,7 @@ const ScheduleDetailScreen = () => {
       navigate("/timelineview", { state: { deletedEvent: event } });
     } catch (error) {
       console.error("❌ 일정 삭제 실패:", error);
-      alert("일정 삭제 중 문제가 발생했습니다.");
+    
     }
   };
 

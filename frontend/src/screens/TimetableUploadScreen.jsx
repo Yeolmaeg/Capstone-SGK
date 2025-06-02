@@ -152,7 +152,7 @@ const styles = {
     padding: "1px",
   },
   button: {
-    width: "85px",
+    width: "100px",
     padding: "10px",
     backgroundColor: "#56c8d8",
     color: "white",
