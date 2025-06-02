@@ -17,6 +17,7 @@ const preferenceRoutes = require('./routes/preferenceRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const classScheduleRoutes = require("./routes/classScheduleRoutes");
 const placeRoutes = require('./routes/placeRoutes');
+const lectureScheduleRoutes = require('./routes/lectureScheduleRoutes');
 
 // 미들웨어
 const authMiddleware = require('./middleware/authMiddleware');
@@ -24,8 +25,6 @@ const authMiddleware = require('./middleware/authMiddleware');
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-const lectureScheduleRoutes = require("./routes/lectureScheduleRoutes");
 
 app.use(cors({
   origin: ["http://localhost:5173", "http://localhost:3000"], // 여러 개도 가능

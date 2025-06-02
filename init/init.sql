@@ -3,6 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   email VARCHAR NOT NULL,
+  password VARCHAR,
   school VARCHAR,
   school_id INTEGER,
   start_term VARCHAR,
@@ -39,6 +40,8 @@ CREATE TABLE schedules (
   place_id UUID REFERENCES places(id), --널값 허용(추천받는 장소만 place_id 부여)
   title VARCHAR,
   address VARCHAR,
+  opening_hours TEXT,    
+  description TEXT,
   latitude DOUBLE PRECISION,
   longitude DOUBLE PRECISION,
   start_time TIMESTAMP NOT NULL,
@@ -62,3 +65,10 @@ CREATE TABLE recommendations (
   satisfied BOOLEAN,
   CONSTRAINT unique_user_place UNIQUE (user_id, place_id)
 );
+
+-- lectures.sql 실행
+\i '/docker-entrypoint-initdb.d/lectures.sql'
+
+-- lectureSchedules.sql 실행
+\i '/docker-entrypoint-initdb.d/lectureSchedules.sql'
+
