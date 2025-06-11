@@ -6,20 +6,6 @@ const { getAddressFromCoords } = require("../services/addressService");
 const API_URL = "https://api.perplexity.ai/chat/completions";
 const API_KEY = process.env.PERPLEXITY_API_KEY;
 
-<<<<<<< HEAD
-=======
-// 주소가 null이 아니면 true
-async function isValidLocation(lat, lng) {
-  try {
-    const { address } = await getAddressFromCoords(lat, lng);
-    return !!address;
-  } catch (err) {
-    console.error("❌ 역지오코딩 검증 실패:", err.message);
-    return false; // 에러 났을 때도 유효하지 않은 걸로 간주
-  }
-}
->>>>>>> 80bdf4305df28b1c8dd131169aa32a740ab98c59
-
 function extractJsonArray(text) {
   const firstBracket = text.indexOf("[");
   if (firstBracket === -1) return null;
@@ -142,18 +128,6 @@ exports.recommendPlace = async (userId, time) => {
 
   const results = [];
   for (const place of parsedPlaces) {
-<<<<<<< HEAD
-  
-=======
-    const { 위도: lat, 경도: lng } = place;
-    const valid = await isValidLocation(lat, lng);
-
-    if (!valid) {
-      console.warn("🚫 유효하지 않은 장소 필터링됨:", place["장소 이름"]);
-      continue; // 다음 장소로 넘어감
-    }
-
->>>>>>> 80bdf4305df28b1c8dd131169aa32a740ab98c59
     const placeId = await upsertPlace(place);
     results.push({ ...place, placeId });
   }
