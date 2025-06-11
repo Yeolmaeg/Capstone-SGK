@@ -34,7 +34,8 @@ exports.deleteAddress = async (id) => {
 };
 
 exports.getAddressFromCoords = async (lat, lng) => {
-    try {
+  console.log("📍 역지오코딩 요청 좌표:", { lat, lng }); // 요청 위치 확인  
+  try {
       const { data } = await axios.get("https://dapi.kakao.com/v2/local/geo/coord2address.json", {
         headers: {
           Authorization: `KakaoAK c40a4d200246f0916d99dd6a32eb4f19`
@@ -44,8 +45,13 @@ exports.getAddressFromCoords = async (lat, lng) => {
           y: lat
         }
       });
+
+      console.log("📬 Kakao 응답 데이터:", JSON.stringify(data, null, 2)); // 전체 응답 확인
   
       const result = data.documents?.[0]?.address;
+      
+      console.log("✅ 추출된 주소:", result?.address_name); // 최종 주소 확인
+
       return {
         address: result?.address_name || null
       };

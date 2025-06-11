@@ -3,20 +3,22 @@
 import axios from "axios";
 
 /**
- * 개강일/종강일로 강의 스케줄 생성 요청
- * @param {String} userId - 사용자 ID
- * @param {String} semesterStart - "YYYY-MM-DD"
- * @param {String} semesterEnd - "YYYY-MM-DD"
- * @returns {Promise<Object[]>} 생성된 스케줄 리스트
+ * OCR로 추출된 강의들을 바탕으로 반복 일정을 생성합니다.
+ * @param {string} userId - 사용자 ID
+ * @param {string} semesterStart - 개강일 (형식: "YYYY-MM-DD")
+ * @param {string} semesterEnd - 종강일 (형식: "YYYY-MM-DD")
+* @param {Array} lectures - OCR 결과로 추출된 강의 배열 
+* @returns {Promise<Array>} - 생성된 schedule 배열
  */
-export const generatelectureSchedule = async (userId, semesterStart, semesterEnd) => {
-  const response = await axios.post("/api/lecture-schedules/generate", {
+// OCR 강의 기반 반복 일정 → schedules 테이블로 바로 insert
+export const generateSchedulesFromLectures = async (userId, semesterStart, semesterEnd, lectures) => {
+  const response = await axios.post("/api/schedule/generate-from-lectures", {
     userId,
     semesterStart,
     semesterEnd,
+    lectures,
   });
-
-  return response.data.schedules || [];
+  return response.data.schedules;
 };
 
 /**

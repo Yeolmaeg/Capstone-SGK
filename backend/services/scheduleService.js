@@ -59,21 +59,36 @@ exports.addSchedule = async ({
   color,
   source = "manual"
 }) => {
+  let description = null;
+  let opening_hours = null;
+
+  // 🔍 place_id가 있으면 장소 정보 조회
+  if (place_id) {
+    const placeRes = await db.query(
+      `SELECT description, hours FROM places WHERE id = $1`,
+      [place_id]
+    );
+    if (placeRes.rows.length > 0) {
+      description = placeRes.rows[0].description;
+      opening_hours = placeRes.rows[0].hours;
+    }
+  }
+
   const result = await db.query(
     `INSERT INTO schedules (
       id, user_id, title, start_time, end_time,
       latitude, longitude, address, place_id,
       move_type, move_duration,
       walk_duration, transit_duration, drive_duration,
-      is_recurring, source, color
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+      is_recurring, source, color, description, opening_hours
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
      RETURNING *`,
     [
       id, user_id, title, start_time, end_time,
       latitude, longitude, address, place_id,
       move_type, move_duration,
       walk_duration, transit_duration, drive_duration,
-      is_recurring, source, color
+      is_recurring, source, color, description, opening_hours
     ]
   );
 

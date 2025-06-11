@@ -18,9 +18,7 @@ const EditTopBar = ({ onEdit }) => {
 };
 
 EditTopBar.propTypes = {
-  selectedYear: PropTypes.number.isRequired,
-  selectedMonth: PropTypes.number.isRequired,
-  onMonthChange: PropTypes.func.isRequired,
+   onEdit: PropTypes.func.isRequired,  // ✅ 올바른 프로퍼티 설정
 };
 
 const styles = {

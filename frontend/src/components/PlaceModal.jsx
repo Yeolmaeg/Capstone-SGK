@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { autoAddSchedule } from "../api/autoschedule"; 
+import { getSchedules } from "../api/schedule"; // 이미 있는 API 사용
+import { FiMapPin } from "react-icons/fi";
 
 const PlaceModal = ({ onClose }) => {
   const [place, setPlace] = useState("");
@@ -12,7 +13,7 @@ const PlaceModal = ({ onClose }) => {
     setLoading(true);
 
     try {
-      const userId = "5012f198-ca58-42ca-afde-41e1459a4cef"; // 사용자 ID 하드코딩 예시
+      const userId = "b4f6282a-c186-4f11-a730-a96b574ab517"; // 사용자 ID 하드코딩 예시
       const { schedule, place: placeInfo } = await autoAddSchedule(place, userId);
 
       const newEvent = {

@@ -1,6 +1,7 @@
 const service = require("../services/scheduleService");
 const db = require("../lib/db");
 const { getPreviousSchedule } = require("../services/recommendationService");
+const { generateSchedulesForSemester } = require("../services/scheduleGenerator");
 const { v4: uuidv4 } = require("uuid");
 
 
@@ -28,7 +29,8 @@ exports.getSchedules = async (req, res) => {
         drive_duration: schedule.drive_duration, 
         created_at: schedule.created_at,
         source: schedule.source,
-        color: schedule.color
+        color: schedule.color,
+        place_id: schedule.place_id
       }));
     res.json(enriched);
   } catch (err) {
@@ -101,28 +103,59 @@ exports.addSchedule = async (req, res) => {
   const id = uuidv4(); 
   const finalTitle = title || generateDefaultTitle(latitude, longitude);
   try {
-    // 1️⃣ 기본 일정 하나 DB에 추가
+    let description = null;
+    let opening_hours = null;
+
+     // 1️⃣ place_id가 있으면 장소 정보 조회
+    if (place_id) {
+      const placeRes = await db.query(
+        `SELECT description, hours FROM places WHERE id = $1`,
+        [place_id]
+      );
+      if (placeRes.rows.length > 0) {
+        description = placeRes.rows[0].description;
+        opening_hours = placeRes.rows[0].hours;
+      }
+    }
+
+    // 2️⃣ 일정 추가
     const insertResult = await db.query(
       `INSERT INTO schedules (
         id, user_id, title, start_time, end_time,
         latitude, longitude, address, place_id,
         move_type, move_duration,
         walk_duration, transit_duration, drive_duration,
-        is_recurring, source, color
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+        is_recurring, source, color,
+        description, opening_hours
+      ) VALUES (
+        $1,$2,$3,$4,$5,
+        $6,$7,$8,$9,
+        $10,$11,
+        $12,$13,$14,
+        $15,$16,$17,
+        $18,$19
+      )
       RETURNING *`,
       [
         id, user_id, finalTitle, start_time, end_time,
         latitude, longitude, address, place_id,
         move_type, move_duration,
         walk_duration, transit_duration, drive_duration,
-        is_recurring, source, finalColor
+        is_recurring, source, finalColor,
+        description, opening_hours
       ]
     );
 
     const created = insertResult.rows[0];
+     res.status(201).json(created);
+  } catch (error) {
+    console.error("❌ 일정 추가 실패:", error);
+    res.status(500).json({ error: "일정 추가 중 오류 발생" });
+  }
+};
 
-    // 2️⃣ 반복 일정이면 4주치 추가
+    /*
+    //2️⃣ 반복 일정이면 4주치 추가
     if (is_recurring) {
       console.log("📌 반복 일정 생성 시작");
       await service.generateRecurringForSchedule(created);
@@ -135,6 +168,7 @@ exports.addSchedule = async (req, res) => {
     res.status(500).json({ error: "일정 추가 실패" });
   }
 };
+    */
 
 // 기본 일정 이름 생성
 function generateDefaultTitle(lat, lon) {
@@ -199,5 +233,22 @@ exports.saveFeedback = async (req, res) => {
   } catch (err) {
     console.error("❌ 피드백 저장 오류:", err.message);
     res.status(500).json({ error: "피드백 저장 실패" });
+  }
+};
+
+// 강의 목록을 기반으로 일정 반복 생성 (schedules 테이블에 직접 insert)
+exports.generateSchedulesFromLectures = async (req, res) => {
+  const { userId, semesterStart, semesterEnd, lectures } = req.body;
+
+  if (!userId || !semesterStart || !semesterEnd || !Array.isArray(lectures)) {
+    return res.status(400).json({ error: "필수 항목 누락 또는 lectures 형식 오류" });
+  }
+
+  try {
+    const schedules = await generateSchedulesForSemester(userId, semesterStart, semesterEnd, lectures);
+    res.status(201).json({ message: "일정 생성 완료", schedules });
+  } catch (error) {
+    console.error("❌ generateSchedulesFromLectures 에러:", error);
+    res.status(500).json({ error: "일정 생성 중 오류 발생" });
   }
 };

@@ -4,9 +4,9 @@ import PropTypes from "prop-types";
 import { FiMapPin } from "react-icons/fi";
 
 const FeedbackModal = ({ 
-  eventTitle = "클로리스 신촌", 
-  eventDescription = "클로리스 신촌점은 유럽의 티 문화를 현대적으로 재해석한 고풍스러운 분위기의 홍차 전문 카페로, 다양한 밀크티와 디저트를 제공합니다.", 
-  eventLocation = "서울 서대문구 연세로4길 38",
+  eventTitle = "빌로우 성수", 
+  eventDescription = "노트북 사용이 자유롭고 조용한 분위기의 카페로 대학생들이 공부나 과제하기에 알맞은 공간입니다.", 
+  eventLocation = "서울특별시 성동구 연무장길 9-1 1층",
   onClose,
 }) => {
   return (

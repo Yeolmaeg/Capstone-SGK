@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EditTopBar from "../components/EditTopBar";
+import TimetableModal from "../components/TimetableModal";
 
 const MyPageScreen = () => {
   const navigate = useNavigate();
-  
-  // 🔄 Local Storage에서 회원 정보 불러오기
   const [email, setEmail] = useState("");
   const [studentId, setStudentId] = useState("");
   const [nickname, setNickname] = useState("");
   const [university, setUniversity] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    // 일관된 키 이름 사용 (회원가입에서 저장한 키)
     const storedEmail = localStorage.getItem("email") || "example@gmail.com";
     const storedStudentId = localStorage.getItem("studentId") || "2371006";
     const storedNickname = localStorage.getItem("nickname") || "닉네임";
@@ -24,15 +23,22 @@ const MyPageScreen = () => {
     setUniversity(storedUniversity);
   }, []);
 
-  const handleDone = () => {
+   const handleEdit = () => {
     navigate("/editmypage");
+  };
+
+  const handleEditTimetable = () => {
+    setIsModalOpen(false);
+    navigate("/timetable-upload");
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.topBarContainer}>
-        <EditTopBar onEdit={handleDone} />
+        <EditTopBar onEdit={handleEdit} />
+
       </div>
+
       <div style={styles.content}>
         <div style={styles.profileSection}>
           <div style={styles.profileImage} />
@@ -60,7 +66,7 @@ const MyPageScreen = () => {
         </div>
 
         <div style={styles.menuSection}>
-          <div style={styles.menuItem} onClick={() => navigate("/timetable-upload")}>
+          <div style={styles.menuItem} onClick={() => setIsModalOpen(true)}>
             <span style={styles.menuText}>시간표</span>
             <span style={styles.menuArrow}>➝</span>
           </div>
@@ -72,6 +78,12 @@ const MyPageScreen = () => {
           </div>
         </div>
       </div>
+
+      <TimetableModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onEdit={handleEditTimetable} 
+      />
     </div>
   );
 };
@@ -163,9 +175,6 @@ const styles = {
   },
   menuArrow: {
     textAlign: "right",
-  },
-  boldText: {
-    fontWeight: "bold",
   },
 };
 

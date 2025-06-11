@@ -107,7 +107,8 @@ exports.createScheduleFromRecommendation = async (req, res) => {
     move_duration,
     walk_duration,
     transit_duration,
-    drive_duration
+    drive_duration,
+    color
   } = req.body;
 
   try {
@@ -135,7 +136,7 @@ exports.createScheduleFromRecommendation = async (req, res) => {
       drive_duration,
       source: "recommendation",
       is_recurring: false,
-      color: "#d1ebb6"
+      color: color || "#d1ebb6"
     });
 
     res.status(201).json({ message: "추천 일정 추가 완료", schedule  });
@@ -146,7 +147,7 @@ exports.createScheduleFromRecommendation = async (req, res) => {
 };
 
 exports.autoCreateScheduleFromRecommendation = async (req, res) => {
-  const { user_id, time } = req.body;
+  const { user_id, time, color } = req.body;
 
   try {
     const places = await service.recommendPlace(user_id, time);
@@ -200,6 +201,9 @@ exports.autoCreateScheduleFromRecommendation = async (req, res) => {
       latitude: place.latitude,
       longitude: place.longitude,
       place_id: placeId,
+      recommendationId,
+      description: place.description || null, 
+      hours: place.hours || null,             
       start_time,
       end_time,
       move_type: shortestType,
@@ -209,7 +213,7 @@ exports.autoCreateScheduleFromRecommendation = async (req, res) => {
       drive_duration: durations.drive,
       source: "recommendation",
       is_recurring: false,
-      color: "#d1ebb6" 
+      color: color || "#d1ebb6"
     });
 
     const saved = await db.query(

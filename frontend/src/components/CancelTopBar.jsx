@@ -2,15 +2,23 @@ import React from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom"; // useNavigate 훅 임포트
 
-const CancelTopBar = () => {
+const CancelTopBar = ({onCancel}) => {
   const navigate = useNavigate(); // navigate 함수 초기화
+
+   const handleCancelClick = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      navigate(-1);
+    }
+  };
 
   return (
     <div style={styles.topBar}>
       <span style={styles.logo} onClick={() => navigate("/timelineview")}>
         Dayfull
       </span>
-      <button style={styles.cancelBtn} onClick={() => navigate(-1)}>
+      <button style={styles.cancelBtn} onClick={() => { handleCancelClick()}}>
         취소
       </button>
     </div>
@@ -18,9 +26,7 @@ const CancelTopBar = () => {
 };
 
 CancelTopBar.propTypes = {
-  selectedYear: PropTypes.number.isRequired,
-  selectedMonth: PropTypes.number.isRequired,
-  onMonthChange: PropTypes.func.isRequired,
+  onCancel: PropTypes.func,
 };
 
 const styles = {

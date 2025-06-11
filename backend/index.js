@@ -20,7 +20,7 @@ const placeRoutes = require('./routes/placeRoutes');
 const lectureScheduleRoutes = require('./routes/lectureScheduleRoutes');
 
 // 미들웨어
-const authMiddleware = require('./middleware/authMiddleware');
+// const authMiddleware = require('./middleware/authMiddleware');
 
 dotenv.config();
 const app = express();

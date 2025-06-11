@@ -19,6 +19,8 @@ services:
       - app-network
     volumes:
       - ./backend:/app
+      - ./backend/uploads:/app/uploads 
+      - ./backend/keys:/app/keys
       - /app/node_modules
       
   frontend:

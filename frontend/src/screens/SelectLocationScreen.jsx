@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import DoneTopBar from "../components/DoneTopBar";
-import { getPlaceInfo } from "../api/place"; 
+import { getPlaceInfo } from "../api/placeInfo"; 
 
 const SelectLocationScreen = () => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const handleDone = async () => {
     });
   } catch (err) {
     console.error("❌ 장소 정보 불러오기 실패:", err);
-    alert("장소 정보를 불러오는 데 실패했습니다.");
+    
   } finally {
     setLoading(false);
   }

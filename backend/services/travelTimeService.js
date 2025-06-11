@@ -6,8 +6,6 @@ const GOOGLE_MAPS_API_KEY = (process.env.GOOGLE_MAPS_API_KEY || "").trim();
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || "").trim();
 
  
-
-
 // 📍 주소 → 좌표 변환
 const getCoordinates = async (address) => {
   console.log("📍 Google Maps 지오코딩 요청:", address);
@@ -19,6 +17,7 @@ const getCoordinates = async (address) => {
   console.log("📡 Google 응답 상태:", response.status);
 
   const location = response.data.results[0]?.geometry?.location;
+
   if (!location) {
     console.error("❌ 주소 → 좌표 변환 실패 (결과 없음)");
     throw new Error("주소를 좌표로 변환할 수 없습니다.");

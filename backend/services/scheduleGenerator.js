@@ -38,10 +38,37 @@ async function generateSchedulesForLecture(lecture, semesterStart, semesterEnd, 
     // lectures.start_time, end_time은 문자열("HH:MM" 또는 "HH:MM:SS")
     const startParts = lecture.start_time.split(":").map(Number);
     const endParts = lecture.end_time.split(":").map(Number);
-    const startDateTime = new Date(occurrenceDate);
-    startDateTime.setHours(startParts[0], startParts[1], startParts[2] || 0);
-    const endDateTime = new Date(occurrenceDate);
-    endDateTime.setHours(endParts[0], endParts[1], endParts[2] || 0);
+   
+    // ✅ start_time을 UTC 기준으로 조립
+    const startDateTime = new Date(
+      occurrenceDate.getFullYear(),
+      occurrenceDate.getMonth(),
+      occurrenceDate.getDate(),
+      startParts[0],
+      startParts[1],
+      startParts[2] || 0
+    );
+    startDateTime.setHours(startDateTime.getHours() - 9); // UTC 변환
+
+    // ✅ end_time도 동일하게 UTC 기준으로 조립
+    const endDateTime = new Date(
+      occurrenceDate.getFullYear(),
+      occurrenceDate.getMonth(),
+      occurrenceDate.getDate(),
+      endParts[0],
+      endParts[1],
+      endParts[2] || 0
+    );
+    endDateTime.setHours(endDateTime.getHours() - 9); // UTC 변환
+
+
+    // ✅ 여기서 로그 찍기!
+    console.log("📅 생성된 일정 로그:");
+    console.log("lecture:", lecture.name);
+    console.log("startDateTime (local):", startDateTime.toString());
+    console.log("startDateTime.toISOString():", startDateTime.toISOString());
+    console.log("endDateTime (local):", endDateTime.toString());
+    console.log("endDateTime.toISOString():", endDateTime.toISOString());
 
     // geocoding: 강의 address를 위도/경도로 변환
     let latitude = null, longitude = null;
@@ -66,7 +93,7 @@ async function generateSchedulesForLecture(lecture, semesterStart, semesterEnd, 
       walk_duration: null,
       transit_duration: null,
       drive_duration: null,
-      source: "manual",
+      source: "timetable",
       is_recurring: false,
     };
 
@@ -85,51 +112,81 @@ async function generateSchedulesForLecture(lecture, semesterStart, semesterEnd, 
  * @param {String} semesterEndStr - 종강일 (예: "2025-12-15")
  * @returns {Array} - 생성된 일정 객체 배열
  */
-async function generateSchedulesForSemester(userId, semesterStartStr, semesterEndStr) {
+async function generateSchedulesForSemester(
+  userId,
+  semesterStartStr,
+  semesterEndStr,
+  lecturesFromClient = null // ✅ 프론트에서 넘긴 lectures 배열
+) {
   const semesterStart = new Date(semesterStartStr);
   const semesterEnd = new Date(semesterEndStr);
 
-  // 모든 강의를 조회합니다.
-  const lecturesResult = await pool.query("SELECT * FROM lectures");
-  const lectures = lecturesResult.rows;
+  // ✅ 조건 분기: 프론트에서 lectures를 넘겼는지 확인
+  let lectures;
+  if (lecturesFromClient && Array.isArray(lecturesFromClient)) {
+    lectures = lecturesFromClient;
+    console.log("Using client-provided lectures:", lectures.length);
+  } else {
+    const lecturesResult = await pool.query("SELECT * FROM lectures");
+    lectures = lecturesResult.rows;
+    console.log("Using DB lectures:", lectures.length);
+  }
 
   let allSchedules = [];
+
   for (const lecture of lectures) {
-    const schedulesForLecture = await generateSchedulesForLecture(lecture, semesterStart, semesterEnd, userId);
+    const schedulesForLecture = await generateSchedulesForLecture(
+      lecture,
+      semesterStart,
+      semesterEnd,
+      userId
+    );
     allSchedules = allSchedules.concat(schedulesForLecture);
   }
 
-  // 생성된 스케줄들을 lecture_schedules 테이블에 삽입합니다.
+  // ✅ schedules 테이블에 직접 삽입
   for (const schedule of allSchedules) {
     try {
       await pool.query(
-        `INSERT INTO lecture_schedules 
-         (user_id, title, address, latitude, longitude, start_time, end_time, move_type, move_duration, walk_duration, transit_duration, drive_duration, source, is_recurring)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
-         [
-           schedule.user_id,
-           schedule.title,
-           schedule.address,
-           schedule.latitude,
-           schedule.longitude,
-           schedule.start_time,
-           schedule.end_time,
-           schedule.move_type,
-           schedule.move_duration,
-           schedule.walk_duration,
-           schedule.transit_duration,
-           schedule.drive_duration,
-           schedule.source,
-           schedule.is_recurring
-         ]
+        `INSERT INTO schedules (
+           user_id, title, address, latitude, longitude,
+           start_time, end_time, move_type, move_duration,
+           walk_duration, transit_duration, drive_duration,
+           source, is_recurring, color
+         ) VALUES (
+           $1, $2, $3, $4, $5,
+           $6, $7, $8, $9, $10,
+           $11, $12, $13,
+           $14, $15
+         )`,
+        [
+          schedule.user_id,
+          schedule.title,
+          schedule.address,
+          schedule.latitude,
+          schedule.longitude,
+          schedule.start_time,
+          schedule.end_time,
+          schedule.move_type,
+          schedule.move_duration,
+          schedule.walk_duration,
+          schedule.transit_duration,
+          schedule.drive_duration,
+          schedule.source,
+          schedule.is_recurring,
+          schedule.color,
+        ]
       );
     } catch (err) {
-      console.error("Error inserting schedule:", err);
+      console.error("❌ Error inserting into schedules:", err);
     }
   }
 
-  console.log("Generated and inserted schedules:", JSON.stringify(allSchedules, null, 2));
+  console.log("✅ Generated schedules inserted into schedules table");
   return allSchedules;
 }
 
-module.exports = { generateSchedulesForSemester };
+module.exports = {
+  generateSchedulesForSemester
+};
+

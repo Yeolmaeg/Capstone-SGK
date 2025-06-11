@@ -15,7 +15,6 @@ const MyPageEditScreen = () => {
     localStorage.setItem("nickname", nickname);
     localStorage.setItem("university", school);
     localStorage.setItem("studentId", studentId);
-    alert("프로필 정보가 저장되었습니다.");
     navigate("/mypage");
   };
 

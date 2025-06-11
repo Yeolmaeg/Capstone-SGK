@@ -9,10 +9,9 @@ import "../styles/custom.css";
 import TimelineTopBar from "../components/TimelineTopBar";
 import FloatingButton from "../components/FloatingButton";
 import PlaceModal from "../components/PlaceModal";
+import FeedbackModal from "../components/FeedbackModal";
 import Event from "../components/Event";
-import { getSchedules } from "../api/schedule"; 
-
-
+import { getSchedules } from "../api/schedule";
 
 const localizer = momentLocalizer(moment);
 
@@ -65,7 +64,7 @@ const TimelineViewScreen = () => {
   const [buttonPosition, setButtonPosition] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [events, setEvents] = useState([]);
-   
+  const [isFeedbackOpen, setFeedbackOpen] = useState(false); // ✅ 추가
 
   const calendarRef = useRef(null);
   const navigate = useNavigate();
@@ -126,6 +125,10 @@ const TimelineViewScreen = () => {
   };
 
   useEffect(() => {
+  setFeedbackOpen(true); // 🔹 화면 진입 시 모달 열기
+}, []);
+
+  useEffect(() => {
     const handleClickOutside = (e) => {
       const popup = document.querySelector(".popup-button-container");
       if (popup && !popup.contains(e.target)) {
@@ -140,34 +143,35 @@ const TimelineViewScreen = () => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        const user_id = "b0448e3d-7b24-4119-83a5-7bab4ebcc0d0";
-        const data = await getSchedules(user_id);
-  
-        const formatted = data.map((e) => ({
-          ...e,
-          start: new Date(e.start_time),
-          end: new Date(e.end_time),
-          place: e.address,
-          color: e.color || "#3174ad",
-          isRecommended: e.source === "recommendation",  // 추천 여부 추가
-          place_id: e.place_id,
-        }));
-  
-        // ✅ 중복 제거 (id 기준)
-        const unique = [];
-        const seen = new Set();
-        for (const e of formatted) {
-          if (!seen.has(e.id)) {
-            seen.add(e.id);
-            unique.push(e);
-          }
-        }
-  
-        setEvents(unique);
-      } catch (err) {
-        console.error("❌ 일정 불러오기 실패:", err);
+       const user_id = "b4f6282a-c186-4f11-a730-a96b574ab517";
+    
+    // 🎯 강의도 포함된 schedules만 조회
+    const all = await getSchedules(user_id);
+
+    const formatted = all.map((e) => ({
+      ...e,
+      start: new Date(e.start_time),
+      end: new Date(e.end_time),
+      place: e.address,
+      color: e.color || (e.source === "timetable" ? "#fdb34a" : "#3174ad"),
+      isRecommended: e.source === "recommendation",
+      place_id: e.place_id,
+    }));
+
+    const unique = [];
+    const seen = new Set();
+    for (const e of formatted) {
+      if (!seen.has(e.id)) {
+        seen.add(e.id);
+        unique.push(e);
       }
-    };
+    }
+
+    setEvents(unique);
+  } catch (err) {
+    console.error("❌ 일정 불러오기 실패:", err);
+    }
+  };
   
     fetchSchedules();
   }, []);
@@ -303,6 +307,8 @@ const TimelineViewScreen = () => {
       </div>
       {!isModalOpen && <FloatingButton onClick={() => setModalOpen(true)} />}
       {isModalOpen && <PlaceModal onClose={() => setModalOpen(false)} />}
+      {isFeedbackOpen && (<FeedbackModal onClose={() => setFeedbackOpen(false)} />
+)} 
     </div>
   );
 };

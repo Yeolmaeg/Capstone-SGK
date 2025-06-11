@@ -2,9 +2,23 @@ const axios = require("axios");
 const redis = require("../lib/redis");
 const db = require("../lib/db");
 const { v4: uuidv4 } = require("uuid");
-
+const { getAddressFromCoords } = require("../services/addressService");
 const API_URL = "https://api.perplexity.ai/chat/completions";
 const API_KEY = process.env.PERPLEXITY_API_KEY;
+
+<<<<<<< HEAD
+=======
+// 주소가 null이 아니면 true
+async function isValidLocation(lat, lng) {
+  try {
+    const { address } = await getAddressFromCoords(lat, lng);
+    return !!address;
+  } catch (err) {
+    console.error("❌ 역지오코딩 검증 실패:", err.message);
+    return false; // 에러 났을 때도 유효하지 않은 걸로 간주
+  }
+}
+>>>>>>> 80bdf4305df28b1c8dd131169aa32a740ab98c59
 
 function extractJsonArray(text) {
   const firstBracket = text.indexOf("[");
@@ -47,7 +61,7 @@ function parseRecommendations(rawText) {
     const mapped = arr.map(item => ({
       name: item["장소 이름"],
       address: item["위치"],
-      description: item["설명"],
+      description: item["한 줄 설명"],
       category: item["카테고리"],
       why: item["키워드"],
       latitude: item["위도"],
@@ -102,14 +116,14 @@ exports.recommendPlace = async (userId, time) => {
   {
     "장소 이름": "...",
     "위치": "...",
-    "설명": "...",
+    "한 줄 설명": "...",
     "카테고리": "...",
     "키워드": "...",
     "영업 시간": "...",
     "위도": ...,
     "경도": ...
   }
-]`.trim();
+] 반드시 위 형식의 json배열로 응답해. 다른 말 수식하지 마`.trim();
 
   const response = await axios.post(API_URL, {
     model: "sonar-pro",
@@ -128,8 +142,24 @@ exports.recommendPlace = async (userId, time) => {
 
   const results = [];
   for (const place of parsedPlaces) {
+<<<<<<< HEAD
+  
+=======
+    const { 위도: lat, 경도: lng } = place;
+    const valid = await isValidLocation(lat, lng);
+
+    if (!valid) {
+      console.warn("🚫 유효하지 않은 장소 필터링됨:", place["장소 이름"]);
+      continue; // 다음 장소로 넘어감
+    }
+
+>>>>>>> 80bdf4305df28b1c8dd131169aa32a740ab98c59
     const placeId = await upsertPlace(place);
     results.push({ ...place, placeId });
+  }
+
+  if (results.length === 0) {
+    throw new Error("유효한 추천 장소가 없습니다.");
   }
 
   return { recommendedPlaces: results };

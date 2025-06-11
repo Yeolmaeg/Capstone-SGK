@@ -1,4 +1,5 @@
 const db = require("../lib/db");
+const { v4: uuidv4 } = require("uuid");
 
 // 장소 조회 (추천 -> 일정 생성용)
 const getPlaceById = async (id) => {
@@ -18,7 +19,7 @@ const getPlaceInfo = async (placeName) => {
   return result.rows[0] || null;
 };
 
-exports.getPlaceDescriptionById = async (placeId) => {
+const getPlaceDescriptionById = async (placeId) => {
   const result = await db.query(
     'SELECT description FROM places WHERE id = $1',
     [placeId]
@@ -28,15 +29,26 @@ exports.getPlaceDescriptionById = async (placeId) => {
 };
 
 // 장소 추가 함수
-const addPlace = async ({ name, address, latitude, longitude, category, hours, description }) => {
+const addPlace = async (data) => {
+  const { id, name, address, latitude, longitude, category, hours, description } = data;
+
+  // 1. 이미 존재하는 ID면 조회해서 반환
+  const exists = await db.query(`SELECT * FROM places WHERE id = $1`, [id]);
+  if (exists.rows.length > 0) {
+    console.log("⚠️ 이미 존재하는 place 반환:", id);
+    return exists.rows[0];
+  }
+
+  // 2. 새로 저장
   const result = await db.query(
-    `INSERT INTO places (name, address, latitude, longitude, category, hours, description) 
-     VALUES ($1, $2, $3, $4, $5, $6, $7) 
+    `INSERT INTO places (id, name, address, latitude, longitude, category, hours, description)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      RETURNING *`,
-    [name, address, latitude, longitude, category, hours, description]
+    [id, name, address, latitude, longitude, category, hours, description]
   );
   return result.rows[0];
 };
+
 
 module.exports = { 
   getPlaceById,

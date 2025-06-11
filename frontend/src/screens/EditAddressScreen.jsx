@@ -1,14 +1,32 @@
-// EditAddress.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FiMapPin } from "react-icons/fi";
 import TopBar from "../components/TopBar";
 
-const EditAddressScreen = ({ initialName = "학교", address = "서울 서대문구 이화여대길 52", onCancel, onConfirm }) => {
-  const [name, setName] = useState(initialName);
+const EditAddressScreen = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 📦 초기 주소값 설정
+  const [name, setName] = useState("학교");
+  const [address, setAddress] = useState("서울 서대문구 이화여대길 52");
+
+  useEffect(() => {
+    // 🗺️ 주소 데이터가 전달된 경우 초기화
+    if (location.state && location.state.address) {
+      const { label, address } = location.state.address;
+      setName(label);
+      setAddress(address);
+    }
+  }, [location.state]);
 
   const handleCancel = () => {
     navigate(-1); // 이전 페이지로 이동
+  };
+
+  const handleSave = () => {
+  
+    navigate("/addresslist");
   };
 
   return (
@@ -33,7 +51,7 @@ const EditAddressScreen = ({ initialName = "학교", address = "서울 서대문
         </div>
 
         <div style={{ ...styles.formRow, marginTop: 20 }}>
-        <FiMapPin style={styles.icon} />
+          <FiMapPin style={styles.icon} />
           <label style={styles.label}>
             <b>주소:</b>
           </label>
@@ -41,7 +59,7 @@ const EditAddressScreen = ({ initialName = "학교", address = "서울 서대문
         </div>
 
         <div style={styles.buttonRow}>
-          <button style={styles.button} onClick={() => onConfirm(name)}>
+          <button style={styles.button} onClick={handleSave}>
             저장
           </button>
           <button style={styles.button} onClick={handleCancel}>
@@ -82,7 +100,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: 6,
-    marginLeft: "30px",
+    marginLeft: "10px",
   },
   icon: {
     fontSize: 20,
@@ -94,7 +112,7 @@ const styles = {
     color: "#222",
   },
   input: {
-    width: "280px", // 적당히 수정
+    width: "230px",
     padding: "6px 10px",
     fontSize: 14,
     borderRadius: 6,
@@ -118,7 +136,7 @@ const styles = {
     fontSize: 14,
     borderRadius: 20,
     border: "1.5px solid #bbb",
-    backgroundColor: "transparent",
+    backgroundColor: "#56c8d8",
     cursor: "pointer",
     minWidth: 80,
   },

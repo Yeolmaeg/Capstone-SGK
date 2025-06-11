@@ -1,4 +1,5 @@
 import apiClient from './axios';
+import axios from "axios";
 
 /**
  * 일정 추가 API
@@ -85,3 +86,23 @@ export const deleteSchedule = async (id) => {
     throw error;
   }
 };
+
+/**
+ * OCR로 추출된 강의들을 바탕으로 반복 일정을 생성합니다.
+ * @param {string} userId - 사용자 ID
+ * @param {string} semesterStart - 개강일 (형식: "YYYY-MM-DD")
+ * @param {string} semesterEnd - 종강일 (형식: "YYYY-MM-DD")
+* @param {Array} lectures - OCR 결과로 추출된 강의 배열 
+* @returns {Promise<Array>} - 생성된 schedule 배열
+ */
+export const generateLectureSchedule = async (userId, semesterStart, semesterEnd, lectures) => {
+  const response = await axios.post("/api/schedule/generate-from-lectures", {
+    userId,
+    semesterStart,
+    semesterEnd,
+    lectures,
+  });
+
+  return response.data.schedules;
+};
+

@@ -1,6 +1,7 @@
 const gridPositions = require("../utils/gridPositions");
 const { performOCR } = require("./ocrService");
 const Jimp = require("jimp");
+console.log("Jimp keys:", Object.keys(Jimp));
 
 const processImageAndExtractText = async (imagePath) => {
   console.log("Starting OCR processing for image:", imagePath);

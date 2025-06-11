@@ -1,20 +1,51 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import BottomBar from "../components/BottomBar";
+import { generateSchedulesFromLectures } from "../api/lectureSchedule";
 
 const DateSelectionScreen = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { lectures } = location.state || {};
   const [startDate, setStartDate] = useState(null); // 개강일 상태
   const [endDate, setEndDate] = useState(null); // 종강일 상태
 
-  // 완료 버튼 클릭 시 날짜가 모두 선택되었는지 확인하고 이동
-  const handleComplete = () => {
-    if (startDate && endDate) {
-      navigate("/scanning");
-    } else {
+  const handleComplete = async () => {
+    if (!startDate || !endDate) {
       alert("개강일과 종강일을 모두 선택해주세요.");
+      return;
+    }
+
+    try {
+      const userId = "b4f6282a-c186-4f11-a730-a96b574ab517"; // ✅ 실제 앱이라면 로그인 정보에서 가져오기
+      
+      // 한국 시간 → UTC로 저장되며 9시간 밀리는 걸 미리 보정
+      const timezoneOffsetMs = 9 * 60 * 60 * 1000;
+
+      // 날짜 + 오전 9시로 시간 설정 후 보정
+      startDate.setHours(9, 0, 0);
+      endDate.setHours(9, 0, 0);
+
+      const semesterStart = new Date(startDate.getTime() - timezoneOffsetMs).toISOString();
+      const semesterEnd = new Date(endDate.getTime() - timezoneOffsetMs).toISOString();
+
+      const schedules = await generateSchedulesFromLectures(
+        userId,
+        semesterStart,
+        semesterEnd,
+        lectures // ✅ OCR로 추출된 강의 목록 전달
+      );
+
+      console.log("반복 일정 생성 완료:", schedules);
+
+      // 다음 화면으로 이동 (필요 시 schedules 넘기기)
+      navigate("/timelineview", { state: { schedules } });
+
+    } catch (error) {
+      console.error("일정 생성 실패:", error);
+      alert("일정 생성 중 오류가 발생했습니다.");
     }
   };
 
@@ -26,18 +57,15 @@ const DateSelectionScreen = () => {
           <span style={styles.calendarIcon}>📅</span>
           <DatePicker
             selected={startDate}
-            onChange={(date) => setStartDate(date)} // 개강일 날짜 선택 시 상태 업데이트
-            dateFormat="yyyy/MM/dd" // 날짜 형식
+            onChange={(date) => setStartDate(date)}
+            dateFormat="yyyy/MM/dd"
             placeholderText="개강일을 입력해주세요."
-            showPopperArrow={false} // 화살표 없애기
-            className="date-picker" // 커스터마이징용 클래스
-            style={styles.datePicker} // 날짜 선택창 스타일링
+            showPopperArrow={false}
             customInput={<input style={styles.customInput} />}
           />
         </div>
       </div>
 
-      {/* 개강일과 종강일 사이에 구분선 추가 */}
       <hr style={styles.separator} />
 
       <h1 style={styles.title2}>종강일을 선택해주세요.</h1>
@@ -46,12 +74,10 @@ const DateSelectionScreen = () => {
           <span style={styles.calendarIcon}>📅</span>
           <DatePicker
             selected={endDate}
-            onChange={(date) => setEndDate(date)} // 종강일 날짜 선택 시 상태 업데이트
+            onChange={(date) => setEndDate(date)}
             dateFormat="yyyy/MM/dd"
             placeholderText="종강일을 입력해주세요."
             showPopperArrow={false}
-            className="date-picker"
-            style={styles.datePicker} // 날짜 선택창 스타일링
             customInput={<input style={styles.customInput} />}
           />
         </div>

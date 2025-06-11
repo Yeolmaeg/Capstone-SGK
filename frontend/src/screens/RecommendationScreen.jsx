@@ -64,7 +64,7 @@ const RecommendationScreen = () => {
     const fetchRecommendation = async () => {
       setLoading(true);
       try {
-        const user_id = "b0448e3d-7b24-4119-83a5-7bab4ebcc0d0"; // TODO: 실제 로그인 유저 ID로 교체
+        const user_id = "b4f6282a-c186-4f11-a730-a96b574ab517"; // TODO: 실제 로그인 유저 ID로 교체
         const timeISO = selectedDate.toISOString();
 
         const result = await autoCreateRecommendedSchedule(user_id, timeISO, selectedColor);
