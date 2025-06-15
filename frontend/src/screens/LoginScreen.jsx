@@ -1,8 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import apiClient from "../api/axios";
 
 const LoginScreen = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const res = await apiClient.post("/user/login", { email, password });
+      const { token, userId } = res.data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user_id", userId);
+
+      navigate("/univ-select"); // 로그인 성공 후 이동
+    } catch (err) {
+      alert("로그인 실패: 이메일 또는 비밀번호 확인");
+      console.error(err);
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -10,15 +28,27 @@ const LoginScreen = () => {
 
       <div style={styles.formGroup}>
         <label style={styles.label}>E-MAIL</label>
-        <input type="text" style={styles.input} placeholder="이메일을 입력하세요" />
+        <input
+          type="text"
+          style={styles.input}
+          placeholder="이메일을 입력하세요"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
       </div>
 
       <div style={styles.formGroup}>
         <label style={styles.label}>PASSWORD</label>
-        <input type="password" style={styles.input} placeholder="비밀번호를 입력하세요" />
+        <input
+          type="password"
+          style={styles.input}
+          placeholder="비밀번호를 입력하세요"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
       </div>
 
-      <button style={styles.loginButton} onClick={() => navigate("/univ-select")}>
+      <button style={styles.loginButton} onClick={handleLogin}>
         로그인
       </button>
 

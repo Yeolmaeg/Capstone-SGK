@@ -19,7 +19,7 @@ const DateSelectionScreen = () => {
     }
 
     try {
-      const userId = "f42e283a-9e2c-491f-9e37-7eaa9389000c"; // ✅ 실제 앱이라면 로그인 정보에서 가져오기
+      const userId = localStorage.getItem("user_id"); // ✅ 실제 앱이라면 로그인 정보에서 가져오기
       
       // 한국 시간 → UTC로 저장되며 9시간 밀리는 걸 미리 보정
       const timezoneOffsetMs = 9 * 60 * 60 * 1000;

@@ -181,7 +181,7 @@ const TimelineViewScreen = () => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-       const user_id = "f42e283a-9e2c-491f-9e37-7eaa9389000c";
+       const user_id = localStorage.getItem("user_id");
     
     // 🎯 강의도 포함된 schedules만 조회
     const all = await getSchedules(user_id);

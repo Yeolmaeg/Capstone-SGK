@@ -3,7 +3,7 @@ const redis = require("../lib/redis");
 const bcrypt = require('bcryptjs');
 const db = require('../lib/db');
 const jwt = require('jsonwebtoken');
-// const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET;
 const { v4: uuidv4 } = require('uuid');
 
 const signup = async (req, res) => {
@@ -105,11 +105,12 @@ const login = async (req, res) => {
     }
 
     
-    // const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(200).json({
       message: '로그인 성공',
-      userId: user.id 
+      userId: user.id,
+      token, 
     });
   } catch (err) {
     console.error('로그인 실패:', err);

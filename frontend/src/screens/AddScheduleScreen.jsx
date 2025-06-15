@@ -117,7 +117,7 @@ const AddScheduleScreen = () => {
 
     try {
       const scheduleData = {
-        user_id: "f42e283a-9e2c-491f-9e37-7eaa9389000c",
+        user_id: localStorage.getItem("user_id"),
         title: title || "제목 없음",
         start_time: startDateTime.toISOString(), // UTC ISO string (백엔드 호환)
         end_time: endDateTime.toISOString(),

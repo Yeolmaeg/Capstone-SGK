@@ -9,7 +9,7 @@ const FeedbackModal = ({
   eventDescription,
   eventLocation,
   eventId,
-  userId = "f42e283a-9e2c-491f-9e37-7eaa9389000c", // 임시 하드코딩
+  userId = localStorage.getItem("user_id"), // 임시 하드코딩
   onClose,
 }) => {
   const handleFeedback = async (type) => {

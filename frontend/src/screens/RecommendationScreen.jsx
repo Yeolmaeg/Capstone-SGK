@@ -66,7 +66,7 @@ const RecommendationScreen = () => {
     const fetchRecommendation = async () => {
       setLoading(true);
       try {
-        const user_id = "f42e283a-9e2c-491f-9e37-7eaa9389000c"; // TODO: 실제 로그인 유저 ID로 교체
+        const user_id = localStorage.getItem("user_id"); // TODO: 실제 로그인 유저 ID로 교체
         const timeISO = selectedDate.toISOString();
 
         const result = await autoCreateRecommendedSchedule(user_id, timeISO, selectedColor);

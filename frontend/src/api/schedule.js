@@ -1,4 +1,4 @@
-import apiClient from './axios';
+import apiClient from '../api/axios';
 import axios from "axios";
 
 /**

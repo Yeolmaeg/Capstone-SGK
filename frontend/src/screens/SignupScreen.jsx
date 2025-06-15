@@ -1,44 +1,42 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import apiClient from "../api/axios";
 
 const SignupScreen = () => {
   const navigate = useNavigate();
-
-  // 🔄 초기 상태 설정 (LocalStorage에서 초기값 로드)
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [studentId, setStudentId] = useState("");
 
-  // 🔄 페이지가 로드될 때 LocalStorage 초기화 (새로고침 시 초기화)
-  useEffect(() => {
-    setNickname("");
-    setEmail("");
-    setPassword("");
-    setPasswordConfirm("");
-    setStudentId("");
-  }, []);
-
-  const handleSignup = () => {
+  const handleSignup = async () => {
     if (!nickname.trim() || !email.trim() || !password || !passwordConfirm || !studentId.trim()) {
       alert("모든 필드를 입력해주세요.");
       return;
     }
     if (password !== passwordConfirm) {
-      alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+      alert("비밀번호가 일치하지 않습니다.");
       return;
     }
 
-    // 🔄 LocalStorage에 최종 데이터 저장
-    localStorage.setItem("nickname", nickname);
-    localStorage.setItem("email", email);
-    localStorage.setItem("password", password);
-    localStorage.setItem("studentId", studentId);
+    try {
+      const res = await apiClient.post("/user/signup", {
+        email,
+        password,
+        name: nickname,
+        school: null,     // 예시: 고정값 or 학교 선택 페이지에서 받아오기
+        school_id: null,           // 예시: 고정값 or 학교 리스트 선택에서 가져오기
+        start_term: "2023-1",     // 예시: 추후 UI에서 선택하게 만들면 좋음
+        end_term: "2027-2"
+      });
 
-
-    // 메인 페이지로 이동 (필요 시 수정)
-    navigate("/");
+      alert("회원가입 성공! 로그인 페이지로 이동합니다.");
+      navigate("/"); // 로그인 페이지로 이동
+    } catch (err) {
+      console.error("회원가입 실패", err);
+      alert("회원가입 실패: 이미 존재하는 이메일이거나 서버 오류");
+    }
   };
 
   return (

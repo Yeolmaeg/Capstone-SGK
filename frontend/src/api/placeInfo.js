@@ -1,5 +1,5 @@
 // src/api/placeInfo.js
-import apiClient from "./axios";
+import apiClient from "../api/axios";
 
 const BASE_URL = "http://localhost:5000/api";
 

@@ -12,7 +12,7 @@ const PlaceModal = ({ onClose }) => {
     setLoading(true);
 
     try {
-      const userId = "f42e283a-9e2c-491f-9e37-7eaa9389000c"; // 사용자 ID 하드코딩 예시
+      const userId = localStorage.getItem("user_id"); // 사용자 ID 하드코딩 예시
       const { schedule, place: placeInfo } = await autoAddSchedule(place, userId);
 
       const newEvent = {

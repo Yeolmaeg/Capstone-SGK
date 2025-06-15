@@ -1,4 +1,4 @@
-import apiClient from "./axios";
+import apiClient from "../api/axios";
 
 /**
  * 자동 일정 생성 API

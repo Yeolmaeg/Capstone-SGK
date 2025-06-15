@@ -31,7 +31,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-app.use("/user", userRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/lecture-schedules", lectureScheduleRoutes);
 
 // app.use(authMiddleware); // 토큰 인증 미들웨어(userRoutes는 필요없음)
