@@ -25,8 +25,9 @@ const SignupScreen = () => {
         email,
         password,
         name: nickname,
+        student_id: studentId,
         school: null,     // 예시: 고정값 or 학교 선택 페이지에서 받아오기
-        school_id: null,           // 예시: 고정값 or 학교 리스트 선택에서 가져오기
+        school_id: null,          // 예시: 고정값 or 학교 리스트 선택에서 가져오기
         start_term: "2023-1",     // 예시: 추후 UI에서 선택하게 만들면 좋음
         end_term: "2027-2"
       });

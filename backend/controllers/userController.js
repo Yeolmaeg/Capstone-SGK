@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const { v4: uuidv4 } = require('uuid');
 
 const signup = async (req, res) => {
-  const { email, password, name, school, school_id, start_term, end_term } = req.body;
+  const { email, password, name, school, school_id, start_term, end_term, student_id } = req.body;
 
   try {
     // 이메일 중복 확인
@@ -22,9 +22,9 @@ const signup = async (req, res) => {
     // 사용자 정보 DB 저장
     await db.query(
       `INSERT INTO users 
-       (id, email, password, name, school, school_id, start_term, end_term)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [id, email, hashedPassword, name, school, school_id, start_term, end_term]
+       (id, email, password, name, school, school_id, start_term, end_term, student_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [id, email, hashedPassword, name, school, school_id, start_term, end_term, student_id]
     );
 
     // Redis에 기본 선호 키워드 저장
@@ -68,11 +68,23 @@ const getUser = async (req, res) => {
 // 사용자 수정
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { school, school_id } = req.body;
+   const { name, password, school, school_id } = req.body;
   try {
-    await service.updateUser(id, { school, school_id });
+    const updates = {};
+
+     if (name) updates.name = name;
+    if (school) updates.school = school;
+    if (school_id) updates.school_id = school_id;
+
+    if (password) {
+      const hashed = await bcrypt.hash(password, 10);
+      updates.password = hashed;
+    }
+
+    await service.updateUser(id, updates);
     res.json({ message: "사용자 정보 수정 완료" });
   } catch (err) {
+    console.error("❌ 사용자 정보 수정 실패:", err);
     res.status(500).json({ error: "사용자 정보 수정 실패" });
   }
 };

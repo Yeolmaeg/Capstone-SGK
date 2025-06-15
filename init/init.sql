@@ -9,6 +9,7 @@ CREATE TABLE users (
   start_term VARCHAR,
   end_term VARCHAR,
   name VARCHAR,
+  student_id VARCHAR,
   created_at TIMESTAMP DEFAULT NOW()
 );
 

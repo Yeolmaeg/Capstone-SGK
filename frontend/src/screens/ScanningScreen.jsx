@@ -1,17 +1,42 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { generateSchedulesFromLectures } from "../api/lectureSchedule";
 
 const ScanningScreen = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const { lectures, startDate, endDate } = location.state || {};
 
   
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate("/scanned"); 
-    }, 3000);
+    const run = async () => {
+      try {
+        const userId = localStorage.getItem("user_id");
+        const offset = 9 * 60 * 60 * 1000;
 
-    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
-  }, [navigate]);
+        startDate.setHours(9, 0, 0);
+        endDate.setHours(9, 0, 0);
+
+        const semesterStart = new Date(startDate.getTime() - offset).toISOString();
+        const semesterEnd = new Date(endDate.getTime() - offset).toISOString();
+
+        const schedules = await generateSchedulesFromLectures(
+          userId,
+          semesterStart,
+          semesterEnd,
+          lectures
+        );
+
+        navigate("/timelineview", { state: { schedules } });
+      } catch (err) {
+        console.error("일정 생성 실패:", err);
+        alert("일정 생성 중 오류가 발생했습니다.");
+        navigate("/dateselection");
+      }
+    };
+
+    run();
+  }, []);
 
   return (
     <div style={styles.container}>

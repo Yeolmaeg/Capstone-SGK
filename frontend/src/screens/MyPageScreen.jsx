@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EditTopBar from "../components/EditTopBar";
 import TimetableModal from "../components/TimetableModal";
+import { getUserInfo } from "../api/user";
 
 const MyPageScreen = () => {
   const navigate = useNavigate();
@@ -12,16 +13,22 @@ const MyPageScreen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem("email") || "example@gmail.com";
-    const storedStudentId = localStorage.getItem("studentId") || "2371006";
-    const storedNickname = localStorage.getItem("nickname") || "닉네임";
-    const storedUniversity = localStorage.getItem("university") || "이화여자대학교";
+  const fetchUserData = async () => {
+    try {
+      const userId = localStorage.getItem("user_id");
+      const user = await getUserInfo(userId);
 
-    setEmail(storedEmail);
-    setStudentId(storedStudentId);
-    setNickname(storedNickname);
-    setUniversity(storedUniversity);
-  }, []);
+      setEmail(user.email);
+      setStudentId(user.student_id || ""); // student_id는 별도 필드 없다면 name 파싱 필요
+      setNickname(user.name || "");
+      setUniversity(user.school || "이화여자대학교"); // null이면 "" 처리
+    } catch (err) {
+      console.error("❌ 사용자 정보 불러오기 실패:", err);
+    }
+  };
+
+  fetchUserData();
+}, []);
 
    const handleEdit = () => {
     navigate("/editmypage");

@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import BottomBar from "../components/BottomBar";
-import { generateSchedulesFromLectures } from "../api/lectureSchedule";
 
 const DateSelectionScreen = () => {
   const navigate = useNavigate();
@@ -18,35 +17,14 @@ const DateSelectionScreen = () => {
       return;
     }
 
-    try {
-      const userId = localStorage.getItem("user_id"); // ✅ 실제 앱이라면 로그인 정보에서 가져오기
-      
-      // 한국 시간 → UTC로 저장되며 9시간 밀리는 걸 미리 보정
-      const timezoneOffsetMs = 9 * 60 * 60 * 1000;
-
-      // 날짜 + 오전 9시로 시간 설정 후 보정
-      startDate.setHours(9, 0, 0);
-      endDate.setHours(9, 0, 0);
-
-      const semesterStart = new Date(startDate.getTime() - timezoneOffsetMs).toISOString();
-      const semesterEnd = new Date(endDate.getTime() - timezoneOffsetMs).toISOString();
-
-      const schedules = await generateSchedulesFromLectures(
-        userId,
-        semesterStart,
-        semesterEnd,
-        lectures // ✅ OCR로 추출된 강의 목록 전달
-      );
-
-      console.log("반복 일정 생성 완료:", schedules);
-
-      // 다음 화면으로 이동 (필요 시 schedules 넘기기)
-      navigate("/timelineview", { state: { schedules } });
-
-    } catch (error) {
-      console.error("일정 생성 실패:", error);
-      alert("일정 생성 중 오류가 발생했습니다.");
-    }
+    // ✅ ScanningScreen으로 넘어가서 거기서 일정 생성
+    navigate("/scanning", {
+      state: {
+        lectures,
+        startDate,
+        endDate,
+      },
+    });
   };
 
   return (

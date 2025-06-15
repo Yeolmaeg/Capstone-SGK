@@ -1,35 +1,46 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DoneTopBar from "../components/DoneTopBar";
+import { getUserInfo, updateUserInfo } from "../api/user";
 
 const MyPageEditScreen = () => {
   const navigate = useNavigate();
 
-  // 🔄 Local Storage에서 초기값 로드 (일관된 키 사용)
-  const [nickname, setNickname] = useState(() => localStorage.getItem("nickname") || "닉네임");
-  const [school, setSchool] = useState(() => localStorage.getItem("university") || "이화여자대학교");
-  const [studentId, setStudentId] = useState(() => localStorage.getItem("studentId") || "2371006");
+  const [nickname, setNickname] = useState("");
+  const [school, setSchool] = useState("");
+  const [studentId, setStudentId] = useState("");
 
-  // ✅ 저장 함수 (Local Storage)
-  const handleSave = () => {
-    localStorage.setItem("nickname", nickname);
-    localStorage.setItem("university", school);
-    localStorage.setItem("studentId", studentId);
-    navigate("/mypage");
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userId = localStorage.getItem("user_id");
+        const user = await getUserInfo(userId);
+
+        setNickname(user.name || "");
+        setSchool(user.school || "이화여자대학교");
+        setStudentId(user.student_id || "");
+      } catch (err) {
+        console.error("❌ 사용자 정보 로드 실패:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      const userId = localStorage.getItem("user_id");
+      await updateUserInfo(userId, {
+        name: nickname,
+      });
+
+      alert("프로필이 수정되었습니다.");
+      navigate("/mypage");
+    } catch (err) {
+      console.error("❌ 저장 실패:", err);
+      alert("저장 중 오류가 발생했습니다.");
+    }
   };
-
-  // 🔄 입력 필드 변경 시 Local Storage 동기화
-  useEffect(() => {
-    localStorage.setItem("nickname", nickname);
-  }, [nickname]);
-
-  useEffect(() => {
-    localStorage.setItem("university", school);
-  }, [school]);
-
-  useEffect(() => {
-    localStorage.setItem("studentId", studentId);
-  }, [studentId]);
 
   return (
     <div style={styles.container}>
@@ -40,44 +51,45 @@ const MyPageEditScreen = () => {
         </div>
 
         <div style={styles.infoSection}>
+          {/* 닉네임 */}
           <div style={styles.infoRow}>
             <span style={styles.label}>닉네임</span>
             <div style={styles.inputWrapper}>
-              <input 
-                type="text" 
-                value={nickname} 
-                onChange={(e) => setNickname(e.target.value)} 
-                style={styles.input} 
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                style={styles.input}
               />
               <button style={styles.clearButton} onClick={() => setNickname("")}>✕</button>
             </div>
           </div>
           <div style={styles.divider} />
 
+          {/* 학교 (수정 불가) */}
           <div style={styles.infoRow}>
             <span style={styles.label}>학교</span>
             <div style={styles.inputWrapper}>
-              <input 
-                type="text" 
-                value={school} 
-                onChange={(e) => setSchool(e.target.value)} 
-                style={styles.input} 
+              <input
+                type="text"
+                value={school}
+                readOnly
+                style={{ ...styles.input, color: "#999" }}
               />
-              <button style={styles.clearButton} onClick={() => setSchool("")}>✕</button>
             </div>
           </div>
           <div style={styles.divider} />
 
+          {/* 학번 (수정 불가) */}
           <div style={styles.infoRow}>
             <span style={styles.label}>학번</span>
             <div style={styles.inputWrapper}>
-              <input 
-                type="text" 
-                value={studentId} 
-                onChange={(e) => setStudentId(e.target.value)} 
-                style={styles.input} 
+              <input
+                type="text"
+                value={studentId}
+                readOnly
+                style={{ ...styles.input, color: "#999" }}
               />
-              <button style={styles.clearButton} onClick={() => setStudentId("")}>✕</button>
             </div>
           </div>
         </div>
