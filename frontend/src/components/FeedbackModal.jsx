@@ -2,13 +2,28 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { FiMapPin } from "react-icons/fi";
+import { saveFeedback } from "../api/feedback";
 
-const FeedbackModal = ({ 
-  eventTitle = "빌로우 성수", 
-  eventDescription = "노트북 사용이 자유롭고 조용한 분위기의 카페로 대학생들이 공부나 과제하기에 알맞은 공간입니다.", 
-  eventLocation = "서울특별시 성동구 연무장길 9-1 1층",
+const FeedbackModal = ({
+  eventTitle,
+  eventDescription,
+  eventLocation,
+  eventId,
+  userId = "f42e283a-9e2c-491f-9e37-7eaa9389000c", // 임시 하드코딩
   onClose,
 }) => {
+  const handleFeedback = async (type) => {
+    const isSatisfied = type === "like";
+    try {
+      await saveFeedback(userId, eventId, isSatisfied);
+      console.log("✅ 피드백 저장 완료");
+      onClose();
+    } catch (err) {
+      console.error("❌ 피드백 저장 실패:", err);
+      onClose();
+    }
+  };
+
   return (
     <div style={styles.overlay} onClick={onClose}>
       <div
@@ -30,10 +45,10 @@ const FeedbackModal = ({
           </p>
         </div>
         <div style={styles.buttonGroup}>
-          <button style={styles.likeButton} onClick={() => onClose("like")}>
+          <button style={styles.likeButton} onClick={() => handleFeedback("like")}>
             👍
           </button>
-          <button style={styles.dislikeButton} onClick={() => onClose("dislike")}>
+          <button style={styles.dislikeButton} onClick={() => handleFeedback("dislike")}>
             👎
           </button>
         </div>
@@ -46,6 +61,8 @@ FeedbackModal.propTypes = {
   eventTitle: PropTypes.string,
   eventDescription: PropTypes.string,
   eventLocation: PropTypes.string,
+  eventId: PropTypes.string,        
+  userId: PropTypes.string, 
   onClose: PropTypes.func.isRequired,
 };
 

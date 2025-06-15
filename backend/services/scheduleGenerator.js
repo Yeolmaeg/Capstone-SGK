@@ -152,12 +152,12 @@ async function generateSchedulesForSemester(
            user_id, title, address, latitude, longitude,
            start_time, end_time, move_type, move_duration,
            walk_duration, transit_duration, drive_duration,
-           source, is_recurring, color
+           source, is_recurring, color, recommendation_id
          ) VALUES (
            $1, $2, $3, $4, $5,
            $6, $7, $8, $9, $10,
            $11, $12, $13,
-           $14, $15
+           $14, $15, $16
          )`,
         [
           schedule.user_id,
@@ -175,6 +175,7 @@ async function generateSchedulesForSemester(
           schedule.source,
           schedule.is_recurring,
           schedule.color,
+          null
         ]
       );
     } catch (err) {

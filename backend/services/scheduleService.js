@@ -57,7 +57,8 @@ exports.addSchedule = async ({
   drive_duration = null,
   is_recurring = false,
   color,
-  source = "manual"
+  source = "manual",
+  recommendation_id = null
 }) => {
   let description = null;
   let opening_hours = null;
@@ -80,15 +81,16 @@ exports.addSchedule = async ({
       latitude, longitude, address, place_id,
       move_type, move_duration,
       walk_duration, transit_duration, drive_duration,
-      is_recurring, source, color, description, opening_hours
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+      is_recurring, source, color, description, opening_hours, recommendation_id
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
      RETURNING *`,
     [
       id, user_id, title, start_time, end_time,
       latitude, longitude, address, place_id,
       move_type, move_duration,
       walk_duration, transit_duration, drive_duration,
-      is_recurring, source, color, description, opening_hours
+      is_recurring, source, color, description, opening_hours, 
+      recommendation_id || null
     ]
   );
 
@@ -298,7 +300,7 @@ exports.generateMonthRecurringSchedules = async () => {
   };
 };
 
-exports.createAutoSchedule = async ({ user_id, place, source = "recommendation", color}) => {
+exports.createAutoSchedule = async ({ user_id, place, source = "recommendation", color, recommendation_id}) => {
    // 1. 좌표가 없으면 geocode로 보완
    console.log("🧠 일정 로딩 시작");
 
@@ -369,13 +371,13 @@ console.log("🧾 불러온 일정 리스트:", schedules.map(s => ({
   // 6. 일정 생성
 
   const insertResult = await db.query(
-    `INSERT INTO schedules (
+     `INSERT INTO schedules (
       id, user_id, title, start_time, end_time,
       latitude, longitude, address,
       move_type, move_duration,
       walk_duration, transit_duration, drive_duration,
-      is_recurring, source, color, place_id
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+      is_recurring, source, color, place_id, recommendation_id
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
      RETURNING *`,
     [
       uuidv4(),
@@ -394,7 +396,8 @@ console.log("🧾 불러온 일정 리스트:", schedules.map(s => ({
       false,
       source,
       color,
-      place.id
+      place.id, 
+      recommendation_id || null
     ]
   );
 

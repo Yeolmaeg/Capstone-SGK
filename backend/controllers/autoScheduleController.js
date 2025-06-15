@@ -20,7 +20,8 @@ exports.autoAddFromPlaceName = async (req, res) => {
       user_id,
       place,
       source: "from_place",
-      color: "#d1ebb6"
+      color: "#d1ebb6",
+      recommendation_id: null
     });
 
     // 3. 응답 반환 (result 아님!)

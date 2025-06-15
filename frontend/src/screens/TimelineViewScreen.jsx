@@ -12,6 +12,7 @@ import PlaceModal from "../components/PlaceModal";
 import FeedbackModal from "../components/FeedbackModal";
 import Event from "../components/Event";
 import { getSchedules } from "../api/schedule";
+import { getPlaceById } from "../api/place";
 
 const localizer = momentLocalizer(moment);
 
@@ -65,6 +66,7 @@ const TimelineViewScreen = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [events, setEvents] = useState([]);
   const [isFeedbackOpen, setFeedbackOpen] = useState(false); // ✅ 추가
+  const [feedbackData, setFeedbackData] = useState(null);
 
   const calendarRef = useRef(null);
   const navigate = useNavigate();
@@ -125,8 +127,44 @@ const TimelineViewScreen = () => {
   };
 
   useEffect(() => {
-  setFeedbackOpen(true); // 🔹 화면 진입 시 모달 열기
-}, []);
+  const now = new Date();
+
+   const pastUnansweredRecs = events
+    .filter(e => e.isRecommended && e.end < now && e.satisfied === null)
+    .sort((a, b) => b.end - a.end);
+
+  if (pastUnansweredRecs.length === 0) return;
+
+  const latest = pastUnansweredRecs[0];
+
+  // ✅ place_id가 있는 경우에만 place 테이블에서 description 받아오기
+  const loadPlaceInfo = async () => {
+    try {
+      let description = "설명 없음";
+
+      if (latest.place_id) {
+        const place = await getPlaceById(latest.place_id);
+        description = place?.description || "설명 없음";
+      }
+
+      console.log("🔥 latest 확인:", latest);
+      setFeedbackData({
+        id: latest.id,
+        title: latest.title,
+        description,
+        location: latest.place || latest.address || "주소 정보 없음",
+        userId: latest.user_id,
+        recommendationId: latest.recommendationId,
+      });
+
+      setFeedbackOpen(true);
+    } catch (err) {
+      console.error("📌 피드백 장소 정보 로딩 실패:", err);
+    }
+  };
+
+  loadPlaceInfo();
+}, [events]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -143,10 +181,11 @@ const TimelineViewScreen = () => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-       const user_id = "b4f6282a-c186-4f11-a730-a96b574ab517";
+       const user_id = "f42e283a-9e2c-491f-9e37-7eaa9389000c";
     
     // 🎯 강의도 포함된 schedules만 조회
     const all = await getSchedules(user_id);
+    console.log("📦 받은 원본 일정 데이터:", all);
 
     const formatted = all.map((e) => ({
       ...e,
@@ -307,8 +346,16 @@ const TimelineViewScreen = () => {
       </div>
       {!isModalOpen && <FloatingButton onClick={() => setModalOpen(true)} />}
       {isModalOpen && <PlaceModal onClose={() => setModalOpen(false)} />}
-      {isFeedbackOpen && (<FeedbackModal onClose={() => setFeedbackOpen(false)} />
-)} 
+      {isFeedbackOpen && feedbackData && (
+        <FeedbackModal
+          eventTitle={feedbackData.title}
+          eventDescription={feedbackData.description}
+          eventLocation={feedbackData.location}
+          eventId={feedbackData.id}
+          userId={feedbackData.userId}
+          onClose={() => setFeedbackOpen(false)}
+        />
+      )}
     </div>
   );
 };

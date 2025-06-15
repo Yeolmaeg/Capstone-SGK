@@ -3,11 +3,11 @@ import axios from "axios";
 const BASE_URL = "http://localhost:5000/api"; // 실제 백엔드 주소로 변경 필요
 
 // 추천 피드백 저장 (키워드 추출)
-export const saveFeedback = async (userId, recommendationId, satisfied) => {
+export const saveFeedback = async (userId, scheduleId, satisfied) => {
   try {
     const response = await axios.post(`${BASE_URL}/feedback`, {
-      user_id: userId,
-      recommendationId: recommendationId,
+      userId: userId,
+      scheduleId: scheduleId,
       satisfied: satisfied,
     });
     

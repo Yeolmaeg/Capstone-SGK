@@ -30,7 +30,8 @@ exports.getSchedules = async (req, res) => {
         created_at: schedule.created_at,
         source: schedule.source,
         color: schedule.color,
-        place_id: schedule.place_id
+        place_id: schedule.place_id,
+        satisfied: schedule.satisfied ?? null
       }));
     res.json(enriched);
   } catch (err) {
@@ -65,7 +66,7 @@ exports.getScheduleById = async (req, res) => {
       drive_duration: schedule.drive_duration,
       created_at: schedule.created_at,
       source: schedule.source,
-      color: schedule.color
+      color: schedule.color,
     };
 
     res.json(enriched);
@@ -94,7 +95,8 @@ exports.addSchedule = async (req, res) => {
     drive_duration = null,
     is_recurring = false,
     source = "manual",
-    color
+    color,
+    recommendation_id = null,
   } = req.body;
 
   const finalColor = color || "#d1ebb6";  
@@ -126,14 +128,14 @@ exports.addSchedule = async (req, res) => {
         move_type, move_duration,
         walk_duration, transit_duration, drive_duration,
         is_recurring, source, color,
-        description, opening_hours
+        description, opening_hours, recommendation_id
       ) VALUES (
         $1,$2,$3,$4,$5,
         $6,$7,$8,$9,
         $10,$11,
         $12,$13,$14,
         $15,$16,$17,
-        $18,$19
+        $18,$19,$20
       )
       RETURNING *`,
       [
@@ -142,7 +144,7 @@ exports.addSchedule = async (req, res) => {
         move_type, move_duration,
         walk_duration, transit_duration, drive_duration,
         is_recurring, source, finalColor,
-        description, opening_hours
+        description, opening_hours, recommendation_id
       ]
     );
 

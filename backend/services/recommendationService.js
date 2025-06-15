@@ -180,7 +180,7 @@ exports.saveRecommendation = async ({ user_id, place }) => {
 // ✅ recommendationId → placeId
 exports.getPlaceIdFromRecommendation = async (recommendationId) => {
   const result = await db.query(
-    'SELECT place_id FROM recommendations WHERE id = $1',
+    'SELECT place_id FROM schedules WHERE recommendation_id = $1',
     [recommendationId]
   );
   return result.rows[0]?.place_id || null;

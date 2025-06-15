@@ -24,7 +24,7 @@ const CalendarViewScreen = () => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        const user_id = "b4f6282a-c186-4f11-a730-a96b574ab517";
+        const user_id = "f42e283a-9e2c-491f-9e37-7eaa9389000c";
         const data = await getSchedules(user_id);
 
         // ✅ 일정 형식 변환

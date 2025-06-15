@@ -53,6 +53,8 @@ const RecommendationScreen = () => {
   const [moveType, setMoveType] = useState("walking");
   const [moveDuration, setMoveDuration] = useState(null);
 
+  const [recommendationId, setRecommendationId] = useState(null);
+
   const minTime = new Date();
   minTime.setHours(0, 0);
   const maxTime = new Date();
@@ -64,10 +66,12 @@ const RecommendationScreen = () => {
     const fetchRecommendation = async () => {
       setLoading(true);
       try {
-        const user_id = "b4f6282a-c186-4f11-a730-a96b574ab517"; // TODO: 실제 로그인 유저 ID로 교체
+        const user_id = "f42e283a-9e2c-491f-9e37-7eaa9389000c"; // TODO: 실제 로그인 유저 ID로 교체
         const timeISO = selectedDate.toISOString();
 
         const result = await autoCreateRecommendedSchedule(user_id, timeISO, selectedColor);
+        setRecommendationId(result.recommendationId); // ✅ 저장
+
         console.log("추천 일정 API 결과:", result);
 
         const place = result.place;
@@ -142,6 +146,7 @@ const RecommendationScreen = () => {
         estimatedMoveDuration: moveDuration,
         moveType,
         isRecommended: true,
+        recommendation_id: recommendationId, 
       };
 
       navigate("/timelineview", { state: { newEvent } });
