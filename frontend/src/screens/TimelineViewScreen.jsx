@@ -192,7 +192,7 @@ const TimelineViewScreen = () => {
       start: new Date(e.start_time),
       end: new Date(e.end_time),
       place: e.address,
-      color: e.color || (e.source === "timetable" ? "#fdb34a" : "#3174ad"),
+      color: e.color || (e.source === "timetable" ? "#d1ebb6" : "#3174ad"),
       isRecommended: e.source === "recommendation",
       place_id: e.place_id,
     }));

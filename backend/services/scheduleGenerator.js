@@ -94,6 +94,7 @@ async function generateSchedulesForLecture(lecture, semesterStart, semesterEnd, 
       transit_duration: null,
       drive_duration: null,
       source: "timetable",
+      color: "#d1ebb6",
       is_recurring: false,
     };
 
@@ -174,7 +175,7 @@ async function generateSchedulesForSemester(
           schedule.drive_duration,
           schedule.source,
           schedule.is_recurring,
-          schedule.color,
+          schedule.color || "#d1ebb6",
           null
         ]
       );
