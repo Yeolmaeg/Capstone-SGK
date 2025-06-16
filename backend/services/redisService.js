@@ -2,7 +2,7 @@ const redis = require('./redisClient');
 
 async function getUserPreferences(userId) {
   const key = `user:${userId}:preferences`;
-  const keywords = await redis.smembers(key);
+  const { result: keywords } = await redis.smembers(key);
   return keywords;
 }
 
