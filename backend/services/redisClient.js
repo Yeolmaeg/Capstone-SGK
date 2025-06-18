@@ -1,17 +1,22 @@
-const Redis = require('ioredis');
+const { Redis } = require('@upstash/redis');
 
 const redis = new Redis({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: process.env.REDIS_PORT || 6379,
-  password: process.env.REDIS_PASSWORD || undefined,
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-redis.on('connect', () => {
-  console.log('✅ Redis connected');
-});
-
-redis.on('error', (err) => {
-  console.error('❗Redis error:', err);
-});
+(async () => {
+  try {
+    await redis.set("connection_test", "ok");
+    const result = await redis.get("connection_test");
+    if (result === "ok") {
+      console.log("✅ Redis connected and operational (ping OK)");
+    } else {
+      console.warn("⚠️ Redis connected but ping test failed");
+    }
+  } catch (err) {
+    console.error("❗ Redis connection failed:", err);
+  }
+})();
 
 module.exports = redis;
