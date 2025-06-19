@@ -440,6 +440,7 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
             "abb_address": "공학B153",
             "address": "서울특별시 서대문구 이화여대길 52 이화여자대학교 신공학관 153호"
         },
+...
         { 
             "id": "e2ac4d64-3ee5-44bc-9106-655ca48d8c6e",
             "name": "데이터베이스(01)",
@@ -551,8 +552,39 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
 ```
 
 
-### 6. 
 
+---
+
+## Sample Data
+
+Render의 무료 요금 플랜을 사용 중이므로 서버 접속 시 1~2분 가량의 활성화 시간이 소요될 수 있습니다.
+
+### 1. 테스트 계정
+
+### 2. 테스트 시간표 이미지
+
+
+---
+
+## Open Source
+
+| 라이브러리 | 설명 | 사용 목적 |
+|------------|------|-----------|
+| [Express](https://expressjs.com/ko/)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Node.js 기반 백엔드 API 서버 프레임워크&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| REST API 서버 구성 및 라우팅 처리 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+| [React Native](https://reactnative.dev/) | 모바일 앱 UI 프레임워크 | 프론트엔드 화면 구성 및 타임라인 UI 구현 |
+| [PostgreSQL](https://www.postgresql.org/) | 오픈소스 관계형 데이터베이스 | 사용자, 일정, 장소, 추천 결과 등의 데이터 저장 |
+| [Redis](https://redis.io/) | In-memory 데이터 저장소 | 사용자 선호 키워드 캐싱 및 빠른 데이터 접근 |
+| [OpenAI GPT-4 API](https://openai.com/api) | LLM API | 만족한 장소 설명에서 선호 키워드 추출 |
+| [Perplexity API](https://docs.perplexity.ai/api-reference/chat-completions-post) | Web Browsing 기반 AI 질문 응답 API | 위치 및 키워드를 기반으로 장소 자동 추천, 장소 정보 검색 |
+| [Google Vision API](https://cloud.google.com/vision?hl=ko) | OCR API | 시간표 이미지에서 텍스트 추출 (강의명, 요일, 시간, 강의실 등) |
+| [Google Maps API](https://developers.google.com/maps?hl=ko) | 지도/거리 정보 API | 대중교통 기반 거리·시간 정보 계산 |
+| [TMAP API](https://tmapapi.tmapmobility.com/) | 도보/자차 경로 API | 도보 및 자차 이동 시간 계산 |
+| [Kakao Local API](https://developers.kakao.com/docs/latest/ko/local/dev-guide) | 장소 및 좌표 검색 API | 장소 좌표 및 운영 정보 보정 (Perplexity 결과 보완용) |
+| [Axios](https://axios-http.com/) | HTTP 요청 처리 라이브러리 | GPT, Perplexity 등 외부 API 호출 |
+| [Dotenv](https://github.com/motdotla/dotenv) | `.env` 파일의 환경변수 로더 | API 키 및 DB 비밀번호 등의 민감 정보 관리 |
+| [Docker](https://www.docker.com/) | 컨테이너 기반 실행 환경 도구 | PostgreSQL, Redis, 백엔드, 프론트 통합 실행 구성 |
+| [Docker Compose](https://docs.docker.com/compose/) | 멀티 컨테이너 환경 자동화 툴 | 모든 서비스 컨테이너화, 자동 빌드 및 실행 |
+| [Render](https://render.com/) | 클라우드 애플리케이션 호스팅 서비스 | 백엔드 서버를 Render에 배포 후 외부 접속 허용 |
 
 
 
