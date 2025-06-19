@@ -20,10 +20,16 @@
 **Dayfull**은 대학 강의 시간표와 통합된 일정 자동 생성, 가고 싶은 장소 자동 배치, 그리고 개인화된 장소 추천 기능을 제공하는 **스마트 캘린더 플랫폼**입니다.
 
 
-### 테스트 주소 및 계정:
-- 테스트 주소:
-- 테스트 ID:
-- 테스트 PASSWORD:
+
+### 테스트 주소 및 계정**:
+
+테스트 주소:
+- **Vercel(프론트)**: https://capstone-api-one.vercel.app/
+- **Render(백)**: https://dayfull.onrender.com
+
+테스트 계정:
+- 테스트 ID: dayfull@example.com
+- 테스트 PASSWORD: 12345
 
 ---
 
@@ -610,8 +616,9 @@ Render의 무료 요금 플랜을 사용 중이므로 서버 접속 시 1~2분 �
 
 ### 1. 테스트 계정
 문서 상단에서도 확인 가능하다.
-**id**:
-**password**: 
+- 테스트 ID: dayfull@example.com
+- 테스트 PASSWORD: 12345
+
 
 ### 2. 테스트 시간표 이미지
 
