@@ -7,7 +7,8 @@
 [![Redis](https://img.shields.io/badge/Redis-6.2-DC382D?style=flat&logo=redis&logoColor=white)](https://redis.io/)
 [![Docker](https://img.shields.io/badge/Docker-20.10-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT4o-412991?style=flat&logo=openai&logoColor=white)](https://openai.com/)
-[![Perplexity](https://img.shields.io/badge/Perplexity-AI-black?style=flat)](https://www.perplexity.ai/)
+[![Perplexity](https://img.shields.io/badge/Perplexity-llama3--sonar-000000?style=flat)](https://www.perplexity.ai/)
+
 
 ---
 <br>
