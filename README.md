@@ -446,7 +446,7 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
 
 ### 4. 시간표 이미지 OCR 처리 후 강의 데이터 획득
 
-시간표샘플3으로 사용자 강의 데이터를 생성합니다.
+시간표샘플2으로 사용자 강의 데이터를 생성합니다.
 
 - **Method**: `POST`
 - **URL**: `https://dayfull.onrender.com/api/class-schedule/upload`
