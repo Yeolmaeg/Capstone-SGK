@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-const isDocker = process.env.DOCKER === 'true';
+const isDocker = typeof process !== 'undefined' && process.env.DOCKER === 'true';
 
 export default defineConfig({
   plugins: [react()],

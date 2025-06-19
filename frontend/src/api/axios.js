@@ -2,6 +2,9 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || "/api"; // 환경에 따라 자동 처리
 
+console.log("🚨 VITE_API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
+console.log("✅ baseURL used:", baseURL);
+
 const apiClient = axios.create({
   baseURL,
   headers: {
