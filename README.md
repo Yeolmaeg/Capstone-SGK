@@ -291,6 +291,7 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
   "user_id": "f49687dd-3a03-4516-a798-3faab06abefc"
 }
 ```
+![실제Body](./dayfull테스트/포스트맨1.png)
 
 - **Response (JSON) 예시**
 
@@ -323,6 +324,8 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
   }
 }
 ```
+![실제Response](./dayfull테스트/포스트맨1답.png)
+
 
 ### 2. 장소 추천 기능
 
@@ -336,6 +339,9 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
   "time": "2025-05-21T21:00:00"
 }
 ```
+
+![실제Request](./dayfull테스트/포스트맨2.png)
+
 
 - **Response (JSON) 예시**
 
@@ -381,6 +387,8 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
   "placeId": "44749e2c-f5fc-4f7b-96c1-2dfad986daa4"
 }
 ```
+![실제Response](./dayfull테스트/포스트맨2답.png)
+
 
 ### 3.  피드백 후 한 줄 소개에서 키워드 추출 기능
 
@@ -406,6 +414,10 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
 }
 ```
 
+![테스트결과](./dayfull테스트/포스트맨3-1.png)
+
+
+
 ### 3-(2) 저장된 사용자 키워드 조회
 
 - **Method**: `GET`
@@ -428,7 +440,13 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
 - 사용된 한줄 소개 `지하 1층부터 4층까지 넓은 공간과 높은 층고를 자랑하는 노트북 작업과 공부, 독서에 적합한 홍대 대표 카공 카페입니다.`
     - 추출된 키워드:  `공간` , `층고`, `독서`
 
+![테스트결과](./dayfull테스트/포스트맨3-2.png)
+
+
+
 ### 4. 시간표 이미지 OCR 처리 후 강의 데이터 획득
+
+시간표샘플3으로 사용자 강의 데이터를 생성합니다.
 
 - **Method**: `POST`
 - **URL**: `https://dayfull.onrender.com/api/class-schedule/upload`
@@ -462,7 +480,12 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
 }
 ```
 
+![테스트결과](./dayfull테스트/포스트맨4.png)
+
+
 ### 5. 사용자 강의 데이터 기반 일정 반복 생성
+
+위에서 생성된 강의 데이터를 기반으로 반복 일정을 생성합니다.
 
 - **Method**: `POST`
 - **URL**: `https://dayfull.onrender.com/api/lecture-schedules/generate`
@@ -474,6 +497,9 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
   "semesterEnd": "2025-06-23"
 }
 ```
+
+![실제Request](./dayfull테스트/포스트맨5.png)
+
 
 - **Response(JSON) 예시**
 ```
@@ -518,6 +544,8 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
 }
 ```
 
+![실제Response](./dayfull테스트/포스트맨5답.png)
+
 
 
 ### 6. 이동 수단별 이동 시간 구하기
@@ -531,6 +559,9 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
   "to": "서울특별시 종로구 세종대로 209"
 }
 ```
+
+![실제Request](./dayfull테스트/포스트맨6.png)
+
 
 - **Response(JSON) 예시**
 ```
@@ -558,6 +589,8 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
 }
 ```
 
+![실제Response](./dayfull테스트/포스트맨6답.png)
+
 
 
 ---
@@ -572,6 +605,13 @@ Render의 무료 요금 플랜을 사용 중이므로 서버 접속 시 1~2분 �
 
 ### 2. 테스트 시간표 이미지
 
+이화여자대학교 컴퓨터공학 전공 과목으로 구성된 3개의 샘플 시간표는 아래와 같다.
+
+<p float="left">
+  <img src="./dayfull테스트/테스트시간표1.jpg" width="230"/>
+  <img src="./dayfull테스트/테스트시간표2.jpg" width="230"/>
+  <img src="./dayfull테스트/테스트시간표3.jpg" width="230"/>
+</p>
 
 ---
 
