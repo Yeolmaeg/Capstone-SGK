@@ -10,14 +10,10 @@ router.post("/class-schedule/upload", upload.single("image"), async (req, res) =
 
   try {
     const imageUrl = req.file.location; // ✅ S3 URL
-    console.log("🌐 Downloading image from:", imageUrl);
+    console.log("🌐 Image URL for Vision API:", imageUrl);
 
-    // ✅ S3 이미지 → Buffer
-    const imageResponse = await axios.get(imageUrl, { responseType: "arraybuffer" });
-    const imageBuffer = Buffer.from(imageResponse.data, "binary");
-
-    // ✅ OCR 처리
-    const detectedBlocks = await processImageAndExtractText(imageBuffer);
+    // ✅ OCR 처리 (버퍼 제거)
+    const detectedBlocks = await processImageAndExtractText(imageUrl);
 
     // ✅ 강의 추출
     const finalLectures = await matchLectures(detectedBlocks);
