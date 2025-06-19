@@ -13,7 +13,7 @@ const performOCR = async (imageUrl, block) => {
   const [result] = await client.textDetection({
     image: {
       source: {
-        imageUri: imageUrl, // ✅ URL 사용
+        imageUri: encodeURI(imageUrl), // ✅ URL 사용
       },
     },
   });
