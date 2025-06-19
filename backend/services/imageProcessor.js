@@ -16,6 +16,7 @@ const processImageAndExtractText = async (imageBuffer) => {
 
     const cropped = image.clone().crop(block.x1, block.y1, width, height);
     const buffer = await cropped.getBufferAsync(Jimp.MIME_JPEG);
+    console.log(`🧪 [${block.day}-${block.period}] Buffer size: ${buffer.length}`);
 
     let ocrResult = "";
     try {
