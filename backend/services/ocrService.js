@@ -1,16 +1,22 @@
 const vision = require("@google-cloud/vision");
 
-// Google Vision API 클라이언트 생성 (환경변수 또는 서비스 계정 키 필요)
-const client = new vision.ImageAnnotatorClient(
-  {
-  keyFilename: "/app/keys/dayfull-timetable-e933618fea72.json", // 명시적 경로 지정
-  }
-);
+const client = new vision.ImageAnnotatorClient({
+  keyFilename: "/app/keys/dayfull-timetable-e933618fea72.json",
+});
 
-const performOCR = async (imageBuffer, block) => {
-  // 실전에서는 block 좌표에 따라 이미지를 크롭한 후 OCR을 호출하겠지만,
-  // 여기선 단순화를 위해 전체 이미지를 대상으로 OCR을 수행합니다.
-  const [result] = await client.textDetection(imageBuffer);
+/**
+ * 이미지 URL로 OCR 수행
+ * @param {string} imageUrl - 공개된 S3 이미지 URL
+ * @param {object} block - OCR 그리드 블록 정보 (디버깅용)
+ */
+const performOCR = async (imageUrl, block) => {
+  const [result] = await client.textDetection({
+    image: {
+      source: {
+        imageUri: encodeURI(imageUrl), // ✅ URL 사용
+      },
+    },
+  });
   const detections = result.textAnnotations;
   return detections && detections[0] ? detections[0].description : "";
 };
