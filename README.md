@@ -421,6 +421,139 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
 - 사용된 한줄 소개 `지하 1층부터 4층까지 넓은 공간과 높은 층고를 자랑하는 노트북 작업과 공부, 독서에 적합한 홍대 대표 카공 카페입니다.`
     - 추출된 키워드:  `공간` , `층고`, `독서`
 
+### 4. 시간표 이미지 OCR 처리 후 강의 데이터 획득
+
+- **Method**: `POST`
+- **URL**: `https://dayfull.onrender.com/api/class-schedule/upload`
+- **Body 예시**: form-data → Key: image(file), Value: 에브리타임 시간표 이미지
+- **Response(JSON) 예시**:
+```
+{
+    "lectures": [
+        {
+            "id": "85845d3b-c859-4b3e-9bfd-03e87ac1835b",
+            "name": "정보통신공학(01)",
+            "day": 1,
+            "start_time": "11:00:00",
+            "end_time": "12:15:00",
+            "class_time": 33,
+            "abb_address": "공학B153",
+            "address": "서울특별시 서대문구 이화여대길 52 이화여자대학교 신공학관 153호"
+        },
+        { 
+            "id": "e2ac4d64-3ee5-44bc-9106-655ca48d8c6e",
+            "name": "데이터베이스(01)",
+            "day": 5,
+            "start_time": "14:00:00",
+            "end_time": "15:15:00",
+            "class_time": 55,
+            "abb_address": "공학A107",
+            "address": "서울특별시 서대문구 이화여대길 52 이화여자대학교 아산공학관 107호"
+        }
+    ]
+}
+```
+
+### 5. 사용자 강의 데이터 기반 일정 반복 생성
+
+- **Method**: `POST`
+- **URL**: `https://dayfull.onrender.com/api/lecture-schedules/generate`
+- **Body 예시**: raw (JSON)
+```
+{
+  "userId": "f49687dd-3a03-4516-a798-3faab06abefc",
+  "semesterStart": "2025-03-02",
+  "semesterEnd": "2025-06-23"
+}
+```
+
+- **Response(JSON) 예시**
+```
+{
+    "schedules": [
+        {
+            "user_id": "사용자 UUID",
+            "title": "컴퓨터알고리즘(01)",
+            "address": "서울특별시 서대문구 이화여대길 52 이화여자대학교 신공학관 161호",
+            "latitude": 37.5618588,
+            "longitude": 126.9468339,
+            "start_time": "2025-03-04T03:30:00.000Z",
+            "end_time": "2025-03-04T04:45:00.000Z",
+            "move_type": null,
+            "move_duration": null,
+            "walk_duration": null,
+            "transit_duration": null,
+            "drive_duration": null,
+            "source": "timetable",
+            "color": "#d1ebb6",
+            "is_recurring": false
+        },
+...
+        {
+            "user_id": "사용자 UUID",
+            "title": "네트워크보안",
+            "address": "서울특별시 서대문구 이화여대길 52 이화여자대학교 아산공학관 101호",
+            "latitude": 37.5618588,
+            "longitude": 126.9468339,
+            "start_time": "2025-03-13T00:30:00.000Z",
+            "end_time": "2025-03-13T01:45:00.000Z",
+            "move_type": null,
+            "move_duration": null,
+            "walk_duration": null,
+            "transit_duration": null,
+            "drive_duration": null,
+            "source": "timetable",
+            "color": "#d1ebb6",
+            "is_recurring": false
+        }
+    ]
+}
+```
+
+
+
+### 6. 이동 수단별 이동 시간 구하기
+
+- **Method**: `POST`
+- **URL**: `https://dayfull.onrender.com/api/distance/detail`
+- **Body 예시**: raw (JSON)
+```
+{
+  "from": "서울특별시 강남구 테헤란로 212",
+  "to": "서울특별시 종로구 세종대로 209"
+}
+```
+
+- **Response(JSON) 예시**
+```
+{
+    "straightDistance": "9.96 km",
+    "travelTimes": {
+        "walking": "210분",
+        "driving": "35분",
+        "transit": "46분",
+        "transit_details": [
+            {
+                "line": "4211",
+                "vehicle": "버스",
+                "departure_stop": "역삼역.GS타워",
+                "arrival_stop": "압구정역3번출구"
+            },
+            {
+                "line": "3호선",
+                "vehicle": "지하철",
+                "departure_stop": "압구정",
+                "arrival_stop": "경복궁"
+            }
+        ]
+    }
+}
+```
+
+
+### 6. 
+
+
 
 
 
