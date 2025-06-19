@@ -10,6 +10,7 @@
 [![Perplexity](https://img.shields.io/badge/Perplexity-AI-black?style=flat)](https://www.perplexity.ai/)
 
 ---
+<br>
 
 ## 📌 프로젝트 개요
 
@@ -18,6 +19,8 @@
 **Dayfull**은 대학 강의 시간표와 통합된 일정 자동 생성, 가고 싶은 장소 자동 배치, 그리고 개인화된 장소 추천 기능을 제공하는 **스마트 캘린더 플랫폼**입니다.
 
 ---
+
+<br>
 
 ## 👥 팀 정보
 
@@ -31,11 +34,13 @@
 
 ---
 
+<br>
+
 ## 🔍 주요 기능
 
 ### 📅 1. 시간표 OCR 기반 일정 생성
 - **에브리타임** 시간표 이미지를 업로드하면, OCR로 강의명/시간/장소 정보를 추출하고 자동 반복 일정을 생성합니다.
-- → `Google Vision API`, `PostgreSQL`
+- → `Google Vision API`, `PostgreSQL`, `GPT` 
 
 ### 📍 2. 장소명 입력만으로 자동 일정 배치
 - 사용자가 입력한 장소명에 대해 위치, 운영시간, 거리 정보를 탐색한 후 **가장 효율적인 시간대에 일정 자동 배치**
@@ -48,13 +53,17 @@
 
 ---
 
+<br>
+
 ## 🎨 서비스 플로우 (Figma)
 
 👉 [Figma 링크 보기](https://www.figma.com/design/Fk1fj1MQfqRAMOVf8soijl/Dayfull---1%EC%B0%A8-%EB%B3%B4%EA%B3%A0%EC%84%9C?node-id=0-1)
 
 ---
 
-## 🗂️ Source Code
+<br>
+
+## 🗂️ 소스코드 설명
 
 해당 프로젝트는 코드 가독성 향상 및 기능별 유지보수 용이를 위해 `controllers`, `routes`, `services` 구조로 분리하여 구현하였다. 
 
@@ -172,7 +181,6 @@
 ```
 
 <br>
-<br>
 
 ---
 
@@ -241,7 +249,6 @@ docker-compose up --build
 
 ---
 
-<br>
 <br>
 
 ## 🚧 How to test
@@ -555,7 +562,9 @@ Dayfull의 API는 RESTful 방식으로 제공되며, Postman을 활용한 기능
 
 ---
 
-## Sample Data
+<br>
+
+## 샘플 데이터
 
 Render의 무료 요금 플랜을 사용 중이므로 서버 접속 시 1~2분 가량의 활성화 시간이 소요될 수 있습니다.
 
@@ -566,7 +575,9 @@ Render의 무료 요금 플랜을 사용 중이므로 서버 접속 시 1~2분 �
 
 ---
 
-## Open Source
+<br>
+
+## 사용한 오픈소스
 
 | 라이브러리 | 설명 | 사용 목적 |
 |------------|------|-----------|
@@ -574,17 +585,10 @@ Render의 무료 요금 플랜을 사용 중이므로 서버 접속 시 1~2분 �
 | [React Native](https://reactnative.dev/) | 모바일 앱 UI 프레임워크 | 프론트엔드 화면 구성 및 타임라인 UI 구현 |
 | [PostgreSQL](https://www.postgresql.org/) | 오픈소스 관계형 데이터베이스 | 사용자, 일정, 장소, 추천 결과 등의 데이터 저장 |
 | [Redis](https://redis.io/) | In-memory 데이터 저장소 | 사용자 선호 키워드 캐싱 및 빠른 데이터 접근 |
-| [OpenAI GPT-4 API](https://openai.com/api) | LLM API | 만족한 장소 설명에서 선호 키워드 추출 |
-| [Perplexity API](https://docs.perplexity.ai/api-reference/chat-completions-post) | Web Browsing 기반 AI 질문 응답 API | 위치 및 키워드를 기반으로 장소 자동 추천, 장소 정보 검색 |
-| [Google Vision API](https://cloud.google.com/vision?hl=ko) | OCR API | 시간표 이미지에서 텍스트 추출 (강의명, 요일, 시간, 강의실 등) |
-| [Google Maps API](https://developers.google.com/maps?hl=ko) | 지도/거리 정보 API | 대중교통 기반 거리·시간 정보 계산 |
-| [TMAP API](https://tmapapi.tmapmobility.com/) | 도보/자차 경로 API | 도보 및 자차 이동 시간 계산 |
-| [Kakao Local API](https://developers.kakao.com/docs/latest/ko/local/dev-guide) | 장소 및 좌표 검색 API | 장소 좌표 및 운영 정보 보정 (Perplexity 결과 보완용) |
 | [Axios](https://axios-http.com/) | HTTP 요청 처리 라이브러리 | GPT, Perplexity 등 외부 API 호출 |
 | [Dotenv](https://github.com/motdotla/dotenv) | `.env` 파일의 환경변수 로더 | API 키 및 DB 비밀번호 등의 민감 정보 관리 |
 | [Docker](https://www.docker.com/) | 컨테이너 기반 실행 환경 도구 | PostgreSQL, Redis, 백엔드, 프론트 통합 실행 구성 |
 | [Docker Compose](https://docs.docker.com/compose/) | 멀티 컨테이너 환경 자동화 툴 | 모든 서비스 컨테이너화, 자동 빌드 및 실행 |
-| [Render](https://render.com/) | 클라우드 애플리케이션 호스팅 서비스 | 백엔드 서버를 Render에 배포 후 외부 접속 허용 |
 
 
 
