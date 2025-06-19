@@ -10,7 +10,7 @@ const redis = new Redis({
     await redis.set("connection_test", "ok");
     const result = await redis.get("connection_test");
     if (result === "ok") {
-      console.log("✅ Redis connected and operational (ping OK)");
+      console.log("✅ Redis connected and operational");
     } else {
       console.warn("⚠️ Redis connected but ping test failed");
     }

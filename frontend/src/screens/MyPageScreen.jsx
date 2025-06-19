@@ -78,11 +78,6 @@ const MyPageScreen = () => {
             <span style={styles.menuArrow}>➝</span>
           </div>
           <div style={styles.divider} />
-          
-          <div style={styles.menuItem} onClick={() => navigate("/addresslist")}>
-            <span style={styles.menuText}>주소록</span>
-            <span style={styles.menuArrow}>➝</span>
-          </div>
         </div>
       </div>
 
