@@ -1,5 +1,5 @@
 // src/api/uploadTimetableImage.js
-import axios from "axios";
+import apiClient from "./axios";
 
 /**
  * 시간표 이미지 업로드 후 OCR 결과 반환
@@ -10,7 +10,7 @@ export const uploadTimetableImage = async (file) => {
     const formData = new FormData();
     formData.append("image", file);
   
-    const response = await axios.post("/api/class-schedule/upload", formData, {
+    const response = await apiClient.post("/class-schedule/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
