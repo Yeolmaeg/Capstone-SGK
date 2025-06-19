@@ -21,7 +21,7 @@
 
 
 
-### 테스트 주소 및 계정**:
+### 테스트 주소 및 계정:
 
 테스트 주소:
 - **Vercel(프론트)**: https://capstone-api-one.vercel.app/
